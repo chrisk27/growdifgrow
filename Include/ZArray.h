@@ -1,8 +1,9 @@
 #ifndef __ZARRAY_H_INCLUDED__
 #define __ZARRAY_H_INCLUDED__
 
-#include<math.h>
 #include<array>
+#include<math.h>
+
 
 using namespace std;
 
@@ -10,7 +11,7 @@ class ZArray {
 
 public:
     // Constructor and Destructor functions
-    ZArray (); 
+    ZArray(); 
     ZArray(int i);
     ZArray(int i, int j);
     ~ZArray();
@@ -24,6 +25,7 @@ public:
     void SavePlot(uint8_t array);
 
     //May need to add get_well and set_well methods later, not sure if I'll be able to use random assignment
+    //Also may need to add a growing command here, i.e. have substantiated a new object and fill it in with values
 
 private:
     int rows {0};
