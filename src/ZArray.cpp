@@ -32,7 +32,7 @@ ZArray::~ZArray() {
 
 
 // Array Generation
-uint8_t ZArray::BlankArray() {
+void ZArray::BlankArray() {
     for (int i=0; i < rows; ++i){
         for (int j=0; j < cols; ++j) {
             array[i][j] = 0;
@@ -40,7 +40,7 @@ uint8_t ZArray::BlankArray() {
     }
 }
 
-uint8_t ZArray::RandomArray() {
+void ZArray::RandomArray() {
     for (int i=0; i < rows; ++i){
         for (int j=0; j < cols; ++j) {
             int randnum = floor( float (rand() * 3));

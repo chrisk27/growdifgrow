@@ -33,7 +33,7 @@ Neighbor::~Neighbor() {
 
 
 // Generator
-short int Neighbor::Generate(short int lrshift, short int udshift) {
+void Neighbor::Generate(short int lrshift, short int udshift) {
     for (short int i=0; i < rows; ++i){
         for (short int j=0; j < cols; ++j){
             if ((lrshift != 0) && (udshift == 0)) {

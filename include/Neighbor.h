@@ -17,6 +17,7 @@ public:
     ~Neighbor();
     // Generators
     void Generate( short int lrshift = 0, short int udshift = 0);
+    short int** array;  //** means it's dynamically allocated (really just defining the pointer I think)
 
 private:
     int rows {0};

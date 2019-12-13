@@ -19,13 +19,13 @@ public:
     void Blank();
     void Band(int bandwidth = 1);
     void Random(float probability = 0);
-
+    bool** array;  //** means it's dynamically allocated (really just defining the pointer I think)
     //Should also add a plotting/coloring function here
 
 private:
     int rows {0};
     int cols {0};
-    bool** array;  //** means it's dynamically allocated (really just defining the pointer I think)
+    
 
 };
 
