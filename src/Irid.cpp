@@ -33,7 +33,7 @@ Irid::~Irid() {
 }
 
 // Iridophore Array Generators
-bool Irid::Blank() {
+void Irid::Blank() {
     for (int i=0; i < rows; ++i){
         for (int j=0; j < cols; ++j) {
             array[i][j] = false;
@@ -41,7 +41,7 @@ bool Irid::Blank() {
     }
 }
 
-bool Irid::Band(int bandwidth) {
+void Irid::Band(int bandwidth) {
     for (int i=0; i < rows; ++i){
         for (int j=0; j < cols; ++j) {
             array[i][j] = false;
@@ -56,7 +56,7 @@ bool Irid::Band(int bandwidth) {
     }
 }
 
-bool Irid::Random(float probability) {
+void Irid::Random(float probability) {
     mt19937 generator ((int) time(0));
     uniform_real_distribution<float> dis(0.0, 1.0);
     for (int i=0; i < rows; ++i){

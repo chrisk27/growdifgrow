@@ -16,9 +16,9 @@ public:
     Irid(int i, int j);
     ~Irid();
     //Generator Functions
-    bool Blank();
-    bool Band(int bandwidth = 1);
-    bool Random(float probability = 0);
+    void Blank();
+    void Band(int bandwidth = 1);
+    void Random(float probability = 0);
 
     //Should also add a plotting/coloring function here
 

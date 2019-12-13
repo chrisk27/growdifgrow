@@ -16,8 +16,8 @@ public:
     ZArray(int i, int j);
     ~ZArray();
     // Initialization functions
-    uint8_t BlankArray(); 
-    uint8_t RandomArray();
+    void BlankArray(); 
+    void RandomArray();
     
     // Output functions
     float GeneratePlot(uint8_t array);

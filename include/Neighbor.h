@@ -16,7 +16,7 @@ public:
     Neighbor(int i, int j);
     ~Neighbor();
     // Generators
-    short int Generate( short int lrshift = 0, short int udshift = 0);
+    void Generate( short int lrshift = 0, short int udshift = 0);
 
 private:
     int rows {0};
