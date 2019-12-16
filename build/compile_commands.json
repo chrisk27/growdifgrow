@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/chris/projects/basedifgrow/build",
+  "command": "/usr/bin/g++-7   -I/home/chris/projects/basedifgrow  -g   -o CMakeFiles/ZebraFish.dir/main.cpp.o -c /home/chris/projects/basedifgrow/main.cpp",
+  "file": "/home/chris/projects/basedifgrow/main.cpp"
+},
+{
+  "directory": "/home/chris/projects/basedifgrow/src",
+  "command": "/usr/bin/g++-7   -I/home/chris/projects/basedifgrow -I/home/chris/projects/basedifgrow/include  -g   -o CMakeFiles/src.dir/Irid.cpp.o -c /home/chris/projects/basedifgrow/src/Irid.cpp",
+  "file": "/home/chris/projects/basedifgrow/src/Irid.cpp"
+},
+{
+  "directory": "/home/chris/projects/basedifgrow/src",
+  "command": "/usr/bin/g++-7   -I/home/chris/projects/basedifgrow -I/home/chris/projects/basedifgrow/include  -g   -o CMakeFiles/src.dir/Neighbor.cpp.o -c /home/chris/projects/basedifgrow/src/Neighbor.cpp",
+  "file": "/home/chris/projects/basedifgrow/src/Neighbor.cpp"
+},
+{
+  "directory": "/home/chris/projects/basedifgrow/src",
+  "command": "/usr/bin/g++-7   -I/home/chris/projects/basedifgrow -I/home/chris/projects/basedifgrow/include  -g   -o CMakeFiles/src.dir/ZArray.cpp.o -c /home/chris/projects/basedifgrow/src/ZArray.cpp",
+  "file": "/home/chris/projects/basedifgrow/src/ZArray.cpp"
+}
+]

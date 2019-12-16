@@ -1,0 +1,1 @@
+/usr/bin/g++-7  -g   CMakeFiles/ZebraFish.dir/main.cpp.o  -o ZebraFish ../src/libsrc.a 

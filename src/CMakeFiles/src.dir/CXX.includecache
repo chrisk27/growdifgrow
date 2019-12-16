@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/Irid.h
+
+../include/Neighbor.h
+
+../include/ZArray.h
+
+/home/chris/projects/basedifgrow/src/Irid.cpp
+math.h
+-
+stdlib.h
+-
+array
+-
+ctime
+-
+random
+-
+Irid.h
+/home/chris/projects/basedifgrow/src/Irid.h
+
+/home/chris/projects/basedifgrow/src/Neighbor.cpp
+math.h
+-
+array
+-
+iostream
+-
+Neighbor.h
+/home/chris/projects/basedifgrow/src/Neighbor.h
+
+/home/chris/projects/basedifgrow/src/ZArray.cpp
+math.h
+-
+array
+-
+ZArray.h
+/home/chris/projects/basedifgrow/src/ZArray.h
+
