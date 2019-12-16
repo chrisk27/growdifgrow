@@ -1,11 +1,11 @@
 #ifndef __ZARRAY_H_INCLUDED__
 #define __ZARRAY_H_INCLUDED__
 
-#include<array>
-#include<math.h>
+//#include<array>
+//#include<math.h>
 
 
-using namespace std;
+//using namespace std;
 
 class ZArray {
 

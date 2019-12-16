@@ -1,11 +1,11 @@
 #ifndef __NEIGHBOR_H_INCLUDED__
 #define __NEIGHBOR_H_INCLUDED__
 
-#include<array>
-#include<math.h>
+//#include<array>
+//#include<math.h>
 
 
-using namespace std;
+//using namespace std;
 
 class Neighbor {
 
@@ -22,7 +22,6 @@ public:
 private:
     int rows {0};
     int cols {0};
-    short int** array;  //** means it's dynamically allocated (really just defining the pointer I think)
 
 };
 

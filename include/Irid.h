@@ -1,11 +1,11 @@
 #ifndef __IRID_H_INCLUDED__
 #define __IRID_H_INCLUDED__
 
-#include<array>
-#include<math.h>
+//#include<array>
+//#include<math.h>
 
 
-using namespace std;
+//using namespace std;
 
 class Irid {
     
@@ -19,7 +19,7 @@ public:
     void Blank();
     void Band(int bandwidth = 1);
     void Random(float probability = 0);
-    bool** array;  //** means it's dynamically allocated (really just defining the pointer I think)
+    bool ** array;  //** means it's dynamically allocated (really just defining the pointer I think)
     //Should also add a plotting/coloring function here
 
 private:

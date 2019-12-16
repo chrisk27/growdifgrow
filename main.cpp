@@ -5,9 +5,11 @@
 #include <ctime>
 #include <random>
 
-#include "ZArray.h"
-#include "Irid.h"
-#include "Neighbor.h"
+#include "include/ZArray.h"
+#include "include/Irid.h"
+#include "include/Neighbor.h"
+
+using namespace std;
 
 int main()
 {
