@@ -1,5 +1,6 @@
 #include <math.h>
 #include <array>
+#include <fstream>
 #include <cstring>
 #include "ZArray.h"
 
@@ -36,16 +37,16 @@ ZArray::~ZArray() {
 
 // Array Generation
 void ZArray::BlankArray() {
-    for (int i=0; i < rows; ++i){
-        for (int j=0; j < cols; ++j) {
+    for (int i=0; i < rows; i++){
+        for (int j=0; j < cols; j++) {
             array[i][j] = 0;
         }
     }
 }
 
 void ZArray::RandomArray() {
-    for (int i=0; i < rows; ++i){
-        for (int j=0; j < cols; ++j) {
+    for (int i=0; i < rows; i++){
+        for (int j=0; j < cols; j++) {
             int randnum = floor( float (rand() * 3));
             switch (randnum) {
                 case 0:
@@ -65,6 +66,22 @@ void ZArray::RandomArray() {
 }
 
 
-// Plotting Functions: Will add these in later!
+// Plotting Functions
+
+
+// Send to CSV
+void ZArray::tempExport() {
+    ofstream tmpfilee;
+    tmpfilee.open("tmpOutput.csv");
+    for (int i=0; i<rows; i++) {
+        tmpfilee << to_string(array[i][0]);
+        for (int j=1; j<cols; j++) {
+            tmpfilee << "," << to_string(array[i][j]);    
+        }
+        tmpfilee << endl;
+    }
+    tmpfilee.close();
+}
+
 
 

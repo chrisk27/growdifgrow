@@ -49,10 +49,10 @@ int main()
 
     //Create Initial Arrays. Note: Doing basics now, can change the initialization later.
     ZArray zebra(r, c); // The main array where it stores the values of the chromatophores
-    zebra.BlankArray();
+    zebra.RandomArray();
 
     Irid ir(r, c); // Iridophore array, for guiding the patterns
-    ir.Blank();
+    ir.Random();
 
     Neighbor up(r, c); // A neighbor matrix to pull array values from
     up.Generate(0, -1);
@@ -195,5 +195,6 @@ int main()
             cout << "Error: Incorrect number generated" << endl;
         }
     }
+    zebra.tempExport();
     cout << "Completed Simulation" << endl;
 }
