@@ -11,14 +11,14 @@ using namespace std;
 Irid::Irid() : rows(0), cols(0) {};  // Defaults to zero
 
 Irid::Irid(int i) : rows(i), cols(i) {  // With one argument, makes square
-    bool **array = new bool*[rows];
+    array = new bool*[rows];
     for (int count=0; count < cols; ++count){
         array[count] = new bool [cols];
     }
 }
 
 Irid::Irid(int i, int j) : rows(i), cols(j) {  //With two arguments, makes rectangle
-    bool **array = new bool*[rows];
+    array = new bool*[rows];
     for (int count=0; count < cols; ++count){
         array[count] = new bool [cols];
     }

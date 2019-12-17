@@ -41,6 +41,8 @@ math.h
 -
 array
 -
+cstring
+-
 ZArray.h
 /home/chris/projects/basedifgrow/src/ZArray.h
 

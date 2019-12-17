@@ -8,14 +8,18 @@
             "name": "g++ build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/main.cpp",
-            "args": [
-                "-g", "Irid.cpp", "Neighbor.cpp", "ZArray.cpp"
-            ],
+            "program": "${command:cmake.launchTargetPath}",
+            //"args": [
+              //  "-g", "Irid.cpp", "Neighbor.cpp", "ZArray.cpp"
+            //],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
+            "environment": [
+                {"r": "100"},
+                {"c": "100"},
+                {"h": "8"}
+            ],
+            "externalConsole": true,
             "MIMode": "gdb",
             "setupCommands": [
                 {
@@ -24,7 +28,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "g++ build active file",
+            //"preLaunchTask": "g++ build active file",
             "miDebuggerPath": "/usr/bin/gdb"
         }
     ]

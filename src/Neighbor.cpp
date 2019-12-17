@@ -9,14 +9,14 @@ using namespace std;
 Neighbor::Neighbor() : rows(0), cols(0) {};  // Defaults to zero
 
 Neighbor::Neighbor(int i) : rows(i), cols(i) {  // With one argument, makes square
-    short int **array = new short int*[rows];
+    array = new short int*[rows];
     for (int count=0; count < cols; ++count){
         array[count] = new short int [cols];
     }
 }
 
 Neighbor::Neighbor(int i, int j) : rows(i), cols(j) {  //With two arguments, makes rectangle
-    short int **array = new short int*[rows];
+    array = new short int*[rows];
     for (int count=0; count < cols; ++count){
         array[count] = new short int [cols];
     }

@@ -1,5 +1,6 @@
 #include <math.h>
 #include <array>
+#include <cstring>
 #include "ZArray.h"
 
 using namespace std;
@@ -8,23 +9,25 @@ using namespace std;
 ZArray::ZArray() : rows(0), cols(0) {};  // Defaults to zero
 
 ZArray::ZArray(int i) : rows(i), cols(i) {  // With one argument, makes square
-    uint8_t **array = new uint8_t*[rows];
-    for (int count=0; count < cols; ++count){
+    array = new uint8_t*[rows];
+    for (int count=0; count < rows; count++){
         array[count] = new uint8_t[cols];
+        memset(array[count], 0, cols*sizeof(uint8_t));
     }
 }
 
 ZArray::ZArray(int i, int j) : rows(i), cols(j) {  //With two arguments, makes rectangle
-    uint8_t **array = new uint8_t*[rows];
-    for (int count=0; count < cols; ++count){
+    array = new uint8_t*[rows];
+    for (int count=0; count < rows; count++){
         array[count] = new uint8_t[cols];
+        memset(array[count], 0, cols*sizeof(uint8_t));
     }
 }
 
 
 // Destructor
 ZArray::~ZArray() {
-    for(int count = 0; count < cols; ++count){
+    for(int count = 0; count < rows; count++){
         delete [] array[count];
     }
     delete [] array;
