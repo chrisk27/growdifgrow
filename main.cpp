@@ -82,9 +82,17 @@ int main()
                 float cosangle = cos(angle);
                 float sinangle = sin(angle);
                 short int inew = rint(cosangle * h + i);
-                inew = inew % r;
+                if (inew > r - 1){
+                    inew = inew % r;    
+                } else if (inew < 0) {
+                    inew = inew + r;
+                }
                 short int jnew = rint(sinangle * h + j);
-                jnew = jnew % c;
+                if (jnew > c -1){
+                    jnew = jnew % c;
+                } else if (jnew < 0) {
+                    jnew = jnew + c;
+                }
                 if (zebra.array[inew][jnew] == 1) {
                     zebra.array[i][j] = 2;
                 }
