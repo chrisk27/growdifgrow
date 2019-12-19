@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+ZebraFish
 
 # Temporary Outputs
 tmpOutput.csv
@@ -43,4 +44,6 @@ build/
 .vscode/
 src/CMakeFiles/
 src/Makefile
-
+CMakeFiles
+Makefile
+CMakeCache.txt
