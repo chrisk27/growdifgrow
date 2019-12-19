@@ -1,6 +1,0 @@
-/home/chris/projects/basedifgrow/build/CMakeFiles/rebuild_cache.dir
-/home/chris/projects/basedifgrow/build/CMakeFiles/ZebraFish.dir
-/home/chris/projects/basedifgrow/build/CMakeFiles/edit_cache.dir
-/home/chris/projects/basedifgrow/src/CMakeFiles/rebuild_cache.dir
-/home/chris/projects/basedifgrow/src/CMakeFiles/src.dir
-/home/chris/projects/basedifgrow/src/CMakeFiles/edit_cache.dir

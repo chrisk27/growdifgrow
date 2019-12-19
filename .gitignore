@@ -33,5 +33,14 @@
 
 # Temporary Outputs
 tmpOutput.csv
+tmpOutput.png
 *.csv#
+
+# Builds
+build/
+*.cmake
+*.make
+.vscode/
+src/CMakeFiles/
+src/Makefile
 
