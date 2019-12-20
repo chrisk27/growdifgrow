@@ -50,10 +50,10 @@ int main()
 
     //Create Initial Arrays. Note: Doing basics now, can change the initialization later.
     ZArray zebra(r, c); // The main array where it stores the values of the chromatophores
-    zebra.RandomArray();
+    zebra.BlankArray();
 
     Irid ir(r, c); // Iridophore array, for guiding the patterns
-    ir.Random();
+    ir.Blank();
 
     Neighbor up(r, c); // A neighbor matrix to pull array values from
     up.Generate(0, -1);
@@ -78,7 +78,7 @@ int main()
         short int j = rand() % c;
         
         if (proc < lx_p) { //Tests to see if melanophore will form due to long-range effect
-            if ((zebra.array[i][j] == 0) && (ir.array[i][j] == false)) {
+            if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
                 float angle = dis(generator) * 2 * M_PI;
                 float cosangle = cos(angle);
                 float sinangle = sin(angle);
@@ -175,7 +175,7 @@ int main()
         }
 
         else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p) && (proc >= lx_p + sm_p + sx_p + bx_p)) { //Tests for birth of melanophore
-            if (zebra.array[i][j] == 0) {
+            if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
                 zebra.array[i][j] = 2;
             }
         }
@@ -196,6 +196,6 @@ int main()
             cout << "Error: Incorrect number generated" << endl;
         }
     }
-    zebra.tempExport();
+    zebra.export2csv("TempOutput.csv");
     cout << "Completed Simulation" << endl;
 }

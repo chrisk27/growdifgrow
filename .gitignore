@@ -36,6 +36,7 @@ ZebraFish
 tmpOutput.csv
 tmpOutput.png
 *.csv#
+*.csv
 
 # Builds
 build/
@@ -47,3 +48,4 @@ src/Makefile
 CMakeFiles
 Makefile
 CMakeCache.txt
+
