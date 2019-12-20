@@ -4,6 +4,7 @@
 #include <array>
 #include <ctime>
 #include <random>
+#include <string>
 
 #include "include/ZArray.h"
 #include "include/GrowArray.h"
@@ -201,6 +202,15 @@ int main()
                 cout << "Error: Incorrect number generated" << endl;
             }
         }
+        string iter_num = to_string(iter + 1);
+        if (iter_num.length == 1){
+            iter_num = "000" + iter_num;
+        } else if (iter_num.length() == 2){
+            iter_num = "00" + iter_num;
+        } else if (iter_num.length() == 3){
+            iter_num = "0" + iter_num;
+        }
+        
         string outname = "csvOutputs/img_" + to_string(iter + 1) + ".csv";
         zebra.export2csv(outname);
 
