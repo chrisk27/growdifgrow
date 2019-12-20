@@ -36,8 +36,36 @@ GrowArray::~GrowArray() {
 }
 
 // Growth Functions - Blank
-void GrowArray::grow1D(bool extend) {
+void GrowArray::grow1D(bool extend) { // will grow cols by 1
+    unsigned short newcols = cols + 1;
     
+    //Create new, larger array
+    unsigned short** newarray = new unsigned short* [rows];
+    for (int count = 0; count < newcols; ++count){
+        newarray[count] = new unsigned short [newcols];
+    }
+
+    //Reassign values into new array and adds new values
+    for (int i=0; i < rows; ++i){
+        for (int j=0; j < cols; ++j){
+            newarray[i][j] = array[i][j];
+        }
+        if (extend == false) {
+            newarray[i][newcols - 1] = 0;
+        } else {
+            newarray[i][newcols - 1] = newarray[i][newcols - 2];
+        }
+    }
+
+    //Delete old array
+    for(int delcount=0; delcount < cols; ++delcount){
+        delete [] array[delcount];
+    }
+    delete [] array;
+
+    //Reassign to proper names
+    array = newarray;
+    cols = newcols;
 }
 
 void GrowArray::grow2D(bool extend) {

@@ -16,7 +16,7 @@ Neighbor::Neighbor(int i, int j) : GrowArray(i, j) {};
 Neighbor::~Neighbor() {};
 
 // Generator
-void Neighbor::Generate(short int lrshift, short int udshift) {
+void Neighbor::Generate() {
     for (short int i=0; i < rows; ++i){
         for (short int j=0; j < cols; ++j){
             if ((lrshift != 0) && (udshift == 0)) {
@@ -42,7 +42,26 @@ void Neighbor::Generate(short int lrshift, short int udshift) {
 
 //Growth functions  //Note: extend shouldn't do anything, just there as placeholder to match form of parent function (necessary to override)
 void Neighbor::grow1D(bool extend) { 
+    unsigned short newcols = cols + 1;
+    
+    //Create new, larger array
+    unsigned short** newarray = new unsigned short* [rows];
+    for (int count = 0; count < newcols; ++count){
+        newarray[count] = new unsigned short [newcols];
+    }
 
+    //Delete old array
+    for(int delcount=0; delcount < cols; ++delcount){
+        delete [] array[delcount];
+    }
+    delete [] array;
+
+    //Reassign to proper names
+    array = newarray;
+    cols = newcols;
+
+    //Re-generate new values
+    Generate();
 }
 
 void Neighbor::grow2D(bool extend) {

@@ -56,146 +56,163 @@ int main()
     ir.Blank();
 
     Neighbor up(r, c); // A neighbor matrix to pull array values from
-    up.Generate(0, -1);
+    up.udshift = -1;
+    up.Generate();
 
     Neighbor down(r, c);
-    down.Generate(0, 1);
+    down.udshift = 1;
+    down.Generate();
 
     Neighbor left(r, c);
-    left.Generate(-1, 0);
+    left.lrshift = -1;
+    left.Generate();
 
     Neighbor right(r, c);
-    right.Generate(1, 0);
+    right.lrshift = 1;
+    right.Generate();
 
 
     //Run Simulation by looping through each event. Will do 10^9 steps
     mt19937 generator ((int) time(0));
     uniform_real_distribution<float> dis(0.0, 1.0);
     srand(time(0));
-    for (unsigned int step=0; step<1e9; ++step) {
-        float proc = dis(generator); // Chooses random process
-        short int i = rand() % r; // Chooses random lattice point
-        short int j = rand() % c;
-        
-        if (proc < lx_p) { //Tests to see if melanophore will form due to long-range effect
-            if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
-                float angle = dis(generator) * 2 * M_PI;
-                float cosangle = cos(angle);
-                float sinangle = sin(angle);
-                short int inew = rint(cosangle * h + i);
-                if (inew > r - 1){
-                    inew = inew % r;    
-                } else if (inew < 0) {
-                    inew = inew + r;
+    for (unsigned int iter = 0; iter < 100; ++iter) {
+        for (unsigned int step=0; step<1e7; ++step) {
+            float proc = dis(generator); // Chooses random process
+            short int i = rand() % r; // Chooses random lattice point
+            short int j = rand() % c;
+            
+            if (proc < lx_p) { //Tests to see if melanophore will form due to long-range effect
+                if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
+                    float angle = dis(generator) * 2 * M_PI;
+                    float cosangle = cos(angle);
+                    float sinangle = sin(angle);
+                    short int inew = rint(cosangle * h + i);
+                    if (inew > r - 1){
+                        inew = inew % r;    
+                    } else if (inew < 0) {
+                        inew = inew + r;
+                    }
+                    short int jnew = rint(sinangle * h + j);
+                    if (jnew > c -1){
+                        jnew = jnew % c;
+                    } else if (jnew < 0) {
+                        jnew = jnew + c;
+                    }
+                    if (zebra.array[inew][jnew] == 1) {
+                        zebra.array[i][j] = 2;
+                    }
                 }
-                short int jnew = rint(sinangle * h + j);
-                if (jnew > c -1){
-                    jnew = jnew % c;
-                } else if (jnew < 0) {
-                    jnew = jnew + c;
+            }
+
+            else if ((proc < lx_p + sm_p) && (proc >= lx_p)) { //Tests to see if local melanophore will kill xanthophore
+                if (zebra.array[i][j] == 1) {
+                    switch(rand() % 4) {
+                        case 0: { //Above Neighbor
+                            if (zebra.array[i][up.array[i][j]] == 2) {
+                                zebra.array[i][j] = 0;
+                            }
+                            break;
+                        }
+                        case 1: { //Below Neighbor
+                            if (zebra.array[i][down.array[i][j]] == 2) {
+                                zebra.array[i][j] = 0;
+                            }
+                            break;
+                        }
+                        case 2: { //Left Neighbor
+                            if (zebra.array[left.array[i][j]][j] == 2) {
+                                zebra.array[i][j] = 0;
+                            }
+                            break;
+                        }
+                        case 3: { //Right Neighbor
+                            if (zebra.array[right.array[i][j]][j] == 2) {
+                                zebra.array[i][j] = 0;  
+                            }
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
                 }
-                if (zebra.array[inew][jnew] == 1) {
+            } 
+
+            else if ((proc < lx_p + sm_p + sx_p) && (proc >= lx_p + sm_p)) { //Tests to see if local xanthophore will kill melanophore
+                if (zebra.array[i][j] == 2) {
+                    switch(rand() % 4) {
+                        case 0: { //Above Neighbor
+                            if (zebra.array[i][up.array[i][j]] == 1) {
+                                zebra.array[i][j] = 0;
+                            }
+                            break;
+                        }
+                        case 1: { //Below Neighbor
+                            if (zebra.array[i][down.array[i][j]] == 1) {
+                                zebra.array[i][j] = 0;
+                            }
+                            break;
+                        }
+                        case 2: { //Left Neighbor
+                            if (zebra.array[left.array[i][j]][j] == 1) {
+                                zebra.array[i][j] = 0;
+                            }
+                            break;
+                        }
+                        case 3: { //Right Neighbor
+                            if (zebra.array[right.array[i][j]][j] == 1) {
+                                zebra.array[i][j] = 0;  
+                            }
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            else if ((proc < lx_p + sm_p + sx_p + bx_p) && (proc >= lx_p + sm_p + sx_p)) { //Tests for birth of xanthophore
+                if (zebra.array[i][j] == 0) {
+                    zebra.array[i][j] = 1;
+                }
+            }
+
+            else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p) && (proc >= lx_p + sm_p + sx_p + bx_p)) { //Tests for birth of melanophore
+                if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
                     zebra.array[i][j] = 2;
                 }
             }
-        }
 
-        else if ((proc < lx_p + sm_p) && (proc >= lx_p)) { //Tests to see if local melanophore will kill xanthophore
-            if (zebra.array[i][j] == 1) {
-                switch(rand() % 4) {
-                    case 0: { //Above Neighbor
-                        if (zebra.array[i][up.array[i][j]] == 2) {
-                            zebra.array[i][j] = 0;
-                        }
-                        break;
-                    }
-                    case 1: { //Below Neighbor
-                        if (zebra.array[i][down.array[i][j]] == 2) {
-                            zebra.array[i][j] = 0;
-                        }
-                        break;
-                    }
-                    case 2: { //Left Neighbor
-                        if (zebra.array[left.array[i][j]][j] == 2) {
-                            zebra.array[i][j] = 0;
-                        }
-                        break;
-                    }
-                    case 3: { //Right Neighbor
-                        if (zebra.array[right.array[i][j]][j] == 2) {
-                            zebra.array[i][j] = 0;  
-                        }
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+            else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p)) { //Tests for death of xanthophore
+                if (zebra.array[i][j] == 1) {
+                    zebra.array[i][j] = 0;
                 }
             }
-        } 
 
-        else if ((proc < lx_p + sm_p + sx_p) && (proc >= lx_p + sm_p)) { //Tests to see if local xanthophore will kill melanophore
-            if (zebra.array[i][j] == 2) {
-                switch(rand() % 4) {
-                    case 0: { //Above Neighbor
-                        if (zebra.array[i][up.array[i][j]] == 1) {
-                            zebra.array[i][j] = 0;
-                        }
-                        break;
-                    }
-                    case 1: { //Below Neighbor
-                        if (zebra.array[i][down.array[i][j]] == 1) {
-                            zebra.array[i][j] = 0;
-                        }
-                        break;
-                    }
-                    case 2: { //Left Neighbor
-                        if (zebra.array[left.array[i][j]][j] == 1) {
-                            zebra.array[i][j] = 0;
-                        }
-                        break;
-                    }
-                    case 3: { //Right Neighbor
-                        if (zebra.array[right.array[i][j]][j] == 1) {
-                            zebra.array[i][j] = 0;  
-                        }
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+            else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p + dm_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p + dx_p)) { //Tests for death of melanophore
+                if (zebra.array[i][j] == 2) {
+                    zebra.array[i][j] = 0;
                 }
             }
-        }
 
-        else if ((proc < lx_p + sm_p + sx_p + bx_p) && (proc >= lx_p + sm_p + sx_p)) { //Tests for birth of xanthophore
-            if (zebra.array[i][j] == 0) {
-                zebra.array[i][j] = 1;
+            else {
+                cout << "Error: Incorrect number generated" << endl;
             }
         }
+        string outname = "csvOutputs/img_" + to_string(iter + 1) + ".csv";
+        zebra.export2csv(outname);
 
-        else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p) && (proc >= lx_p + sm_p + sx_p + bx_p)) { //Tests for birth of melanophore
-            if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
-                zebra.array[i][j] = 2;
-            }
-        }
-
-        else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p)) { //Tests for death of xanthophore
-            if (zebra.array[i][j] == 1) {
-                zebra.array[i][j] = 0;
-            }
-        }
-
-        else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p + dm_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p + dx_p)) { //Tests for death of melanophore
-            if (zebra.array[i][j] == 2) {
-                zebra.array[i][j] = 0;
-            }
-        }
-
-        else {
-            cout << "Error: Incorrect number generated" << endl;
+        // Perform Growth
+        if (iter != 99) {
+            zebra.grow1D(false);
+            ir.grow1D(false);
+            up.grow1D(false);
+            down.grow1D(false);
+            left.grow1D(false);
+            right.grow1D(false);
         }
     }
-    zebra.export2csv("TempOutput.csv");
     cout << "Completed Simulation" << endl;
 }

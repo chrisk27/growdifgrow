@@ -13,11 +13,15 @@ public:
     ~Neighbor();
 
     // Generators
-    void Generate( short int lrshift = 0, short int udshift = 0);
+    void Generate();
 
     // Growth - Need to override from parent class since we use these differently
     void grow1D(bool extend);
     void grow2D(bool extend);
+
+    // Shifts
+    short lrshift {0};
+    short udshift {0};
 
 };
 
