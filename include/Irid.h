@@ -1,13 +1,9 @@
 #ifndef __IRID_H_INCLUDED__
 #define __IRID_H_INCLUDED__
 
-//#include<array>
-//#include<math.h>
+#include"GrowArray.h"
 
-
-//using namespace std;
-
-class Irid {
+class Irid : GrowArray {
     
 public:
     //Constructor and Destructor Functions

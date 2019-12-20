@@ -6,6 +6,7 @@
 #include <random>
 
 #include "include/ZArray.h"
+#include "include/GrowArray.h"
 #include "include/Irid.h"
 #include "include/Neighbor.h"
 

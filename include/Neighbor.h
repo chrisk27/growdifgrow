@@ -1,13 +1,9 @@
 #ifndef __NEIGHBOR_H_INCLUDED__
 #define __NEIGHBOR_H_INCLUDED__
 
-//#include<array>
-//#include<math.h>
+#include "GrowArray.h"
 
-
-//using namespace std;
-
-class Neighbor {
+class Neighbor : GrowArray {
 
 public:
     // Constructors and Destructor

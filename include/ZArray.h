@@ -1,13 +1,9 @@
 #ifndef __ZARRAY_H_INCLUDED__
 #define __ZARRAY_H_INCLUDED__
 
-//#include<array>
-//#include<math.h>
+#include"GrowArray.h"
 
-
-//using namespace std;
-
-class ZArray {
+class ZArray : GrowArray {
 
 public:
     // Constructor and Destructor functions
