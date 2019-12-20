@@ -8,29 +8,14 @@
 using namespace std;
 
 // Constructors
-Irid::Irid() : rows(0), cols(0) {};  // Defaults to zero
+Irid::Irid() : GrowArray() {}  // Defaults to zero
 
-Irid::Irid(int i) : rows(i), cols(i) {  // With one argument, makes square
-    array = new bool*[rows];
-    for (int count=0; count < cols; ++count){
-        array[count] = new bool [cols];
-    }
-}
+Irid::Irid(int i) : GrowArray(i) {}
 
-Irid::Irid(int i, int j) : rows(i), cols(j) {  //With two arguments, makes rectangle
-    array = new bool*[rows];
-    for (int count=0; count < cols; ++count){
-        array[count] = new bool [cols];
-    }
-}
+Irid::Irid(int i, int j) : GrowArray(i, j) {}
 
 // Destructor
-Irid::~Irid() {
-    for(int count = 0; count < cols; ++count){
-        delete [] array[count];
-    }
-    delete [] array;
-}
+Irid::~Irid() {}
 
 // Iridophore Array Generators
 void Irid::Blank() {

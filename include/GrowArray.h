@@ -13,15 +13,10 @@ public:
     ~GrowArray();
 
     //Growth Functions-blank cells
-    void grow1Dblank();
-    void grow2Dblank();
-
-    //Growth Functions-inheret cells
-    void grow1Dextend();
-    void grow2Dextend();
+    void grow1D(bool extend = false);
+    void grow2D(bool extend = false);
 
     //Pointer Array (for Dynamic Allocation)
-
     unsigned short int** array;
     
     //Finish, clean, and export

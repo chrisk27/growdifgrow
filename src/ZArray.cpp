@@ -7,33 +7,14 @@
 using namespace std;
 
 // Constructors
-ZArray::ZArray() : rows(0), cols(0) {};  // Defaults to zero
+ZArray::ZArray() : GrowArray() {};  // Defaults to zero
 
-ZArray::ZArray(int i) : rows(i), cols(i) {  // With one argument, makes square
-    array = new uint8_t*[rows];
-    for (int count=0; count < rows; count++){
-        array[count] = new uint8_t[cols];
-        memset(array[count], 0, cols*sizeof(uint8_t));
-    }
-}
+ZArray::ZArray(int i) : GrowArray(i) {};
 
-ZArray::ZArray(int i, int j) : rows(i), cols(j) {  //With two arguments, makes rectangle
-    array = new uint8_t*[rows];
-    for (int count=0; count < rows; count++){
-        array[count] = new uint8_t[cols];
-        memset(array[count], 0, cols*sizeof(uint8_t));
-    }
-}
-
+ZArray::ZArray(int i, int j) : GrowArray(i, j) {};
 
 // Destructor
-ZArray::~ZArray() {
-    for(int count = 0; count < rows; count++){
-        delete [] array[count];
-    }
-    delete [] array;
-}
-
+ZArray::~ZArray() {};
 
 // Array Generation
 void ZArray::BlankArray() {
@@ -64,24 +45,4 @@ void ZArray::RandomArray() {
         }
     }
 }
-
-
-// Plotting Functions
-
-
-// Send to CSV
-void ZArray::tempExport() {
-    ofstream tmpfilee;
-    tmpfilee.open("tmpOutput.csv");
-    for (int i=0; i<rows; i++) {
-        tmpfilee << to_string(array[i][0]);
-        for (int j=1; j<cols; j++) {
-            tmpfilee << "," << to_string(array[i][j]);    
-        }
-        tmpfilee << endl;
-    }
-    tmpfilee.close();
-}
-
-
 

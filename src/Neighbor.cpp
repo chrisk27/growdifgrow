@@ -6,31 +6,14 @@
 using namespace std;
 
 // Constructors
-Neighbor::Neighbor() : rows(0), cols(0) {};  // Defaults to zero
+Neighbor::Neighbor() : GrowArray() {};
 
-Neighbor::Neighbor(int i) : rows(i), cols(i) {  // With one argument, makes square
-    array = new short int*[rows];
-    for (int count=0; count < cols; ++count){
-        array[count] = new short int [cols];
-    }
-}
+Neighbor::Neighbor(int i) : GrowArray(i) {};
 
-Neighbor::Neighbor(int i, int j) : rows(i), cols(j) {  //With two arguments, makes rectangle
-    array = new short int*[rows];
-    for (int count=0; count < cols; ++count){
-        array[count] = new short int [cols];
-    }
-}
-
+Neighbor::Neighbor(int i, int j) : GrowArray(i, j) {};
 
 // Destructor
-Neighbor::~Neighbor() {
-    for(int count = 0; count < cols; ++count){
-        delete [] array[count];
-    }
-    delete [] array;
-}
-
+Neighbor::~Neighbor() {};
 
 // Generator
 void Neighbor::Generate(short int lrshift, short int udshift) {
@@ -55,4 +38,13 @@ void Neighbor::Generate(short int lrshift, short int udshift) {
             }
         }
     }
+}
+
+//Growth functions  //Note: extend shouldn't do anything, just there as placeholder to match form of parent function (necessary to override)
+void Neighbor::grow1D(bool extend) { 
+
+}
+
+void Neighbor::grow2D(bool extend) {
+
 }
