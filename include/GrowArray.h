@@ -2,6 +2,7 @@
 #define __GROWARRAY_H_INCLUDED__
 
 #include<string>
+#include<vector>
 
 class GrowArray{
 
@@ -16,8 +17,8 @@ public:
     void grow1D(bool extend = false);
     void grow2D(bool extend = false);
 
-    //Pointer Array (for Dynamic Allocation)
-    unsigned short int** array;
+    //Vector (for Dynamic Allocation)
+    vector<vector<unsigned short> > array;
     unsigned short int getCols();
     unsigned short int getRows();
     

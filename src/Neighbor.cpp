@@ -42,23 +42,17 @@ void Neighbor::Generate() {
 
 //Growth functions  //Note: extend shouldn't do anything, just there as placeholder to match form of parent function (necessary to override)
 void Neighbor::grow1D(bool extend) { 
-    unsigned short newcols = cols + 1;
+
+    //Add one space to each row
+     int numRows = array.size();
+    for (int i =0; i < numRows; ++i){
+        array[i].push_back(0);
+    }
+    cols = cols+1;
+    if (cols != array[1].size()){
+        cout << "Error in column indexing" << endl;
+    }
     
-    //Create new, larger array
-    unsigned short** newarray = new unsigned short* [rows];
-    for (int count = 0; count < newcols; ++count){
-        newarray[count] = new unsigned short [newcols];
-    }
-
-    //Delete old array
-    for(int delcount=0; delcount < cols; ++delcount){
-        delete [] array[delcount];
-        array[delcount] = newarray[delcount];
-    }
-
-    //Reassign to proper names
-    cols = newcols;
-
     //Re-generate new values
     Generate();
 }

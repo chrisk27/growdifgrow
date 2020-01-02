@@ -1,6 +1,7 @@
 #include <math.h>
 #include <fstream>
 #include <cstring>
+#include <vector>
 
 #include "GrowArray.h"
 
@@ -10,63 +11,49 @@ using namespace std;
 GrowArray::GrowArray() : rows(0), cols(0) {};
 
 GrowArray::GrowArray(int i) : rows(i), cols(i) {  //with one argument, makes square
-    array = new unsigned short* [rows];
-    for (int count=0; count < cols; ++count){
-        array[count] = new unsigned short [cols];
-        memset(array[count], 0, cols*sizeof(unsigned short));
+    vector<unsigned short> blankRow;
+    for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row vector
+        blankRow.push_back(0);
+    }
+    for (unsigned short ll = 0; ll < rows; ++ll){  //fills array with blank vector
+        array.push_back(blankRow);
     }
 }
 
 GrowArray::GrowArray(int i, int j) : rows(i), cols(j) {
-    array = new unsigned short* [rows];
-    for (int count = 0; count < cols; ++count){
-        array[count] = new unsigned short [cols];
-        memset(array[count], 0, cols*sizeof(unsigned short));
+    vector<unsigned short> blankRow;
+    for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row vector
+        blankRow.push_back(0);
+    }
+    for (unsigned short ll = 0; ll < rows; ++ll){  //fills array with blank vector
+        array.push_back(blankRow);
     }
 }
 
 // Destructor
 GrowArray::~GrowArray() {
-    for(int count = 0; count < cols; ++count){
-        delete [] array[count];
-    }
-    delete [] array;
     delete &rows;
     delete &cols;
 }
 
 // Growth Functions
 void GrowArray::grow1D(bool extend) { // will grow cols by 1
-    unsigned short newcols = cols + 1;
     
-    //Create new, larger array
-    unsigned short** newarray = new unsigned short* [rows];
-    for (int count = 0; count < newcols; ++count){
-        newarray[count] = new unsigned short [newcols];
-        memset(newarray[count], 0, newcols*sizeof(unsigned short));
-    }
-
-    //Fill New array
-    for (int i=0; i<rows; ++i) { 
-        for (int j=0; j<cols; ++j) {
-            newarray[i][j] = array[i][j];
-        }
-        if (extend == false) {
-            newarray[i][newcols - 1] = 0;
+    //Add one more to each column vector
+    int numRows = array.size();
+    for (int i =0; i < numRows; ++i){
+        if (extend == false){
+            array[i].push_back(0);
         } else {
-            newarray[i][cols] = newarray[i][cols];
+            unsigned short oldVal = array[i].back();
+            array[i].push_back(oldVal);
         }
     }
-
-    //Delete old values and re-aim
-    for(int delcount=0; delcount < cols; ++delcount){
-        delete [] array[delcount];
-        array[delcount] = newarray[delcount];
+    //Increases column size
+    cols = cols + 1;
+    if (array[0].size() != cols){
+        throw invalid_argument( "Error: column definition incorrect");
     }
-    
-
-    //Reassign to proper names
-    cols = newcols;
 }
 
 void GrowArray::grow2D(bool extend) {
