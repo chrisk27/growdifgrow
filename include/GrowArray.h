@@ -18,6 +18,8 @@ public:
 
     //Pointer Array (for Dynamic Allocation)
     unsigned short int** array;
+    unsigned short int getCols();
+    unsigned short int getRows();
     
     //Finish, clean, and export
     unsigned short int Rectangularize();

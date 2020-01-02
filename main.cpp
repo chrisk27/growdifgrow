@@ -6,8 +6,8 @@
 #include <random>
 #include <string>
 
-#include "include/ZArray.h"
 #include "include/GrowArray.h"
+#include "include/ZArray.h"
 #include "include/Irid.h"
 #include "include/Neighbor.h"
 
@@ -78,6 +78,8 @@ int main()
     uniform_real_distribution<float> dis(0.0, 1.0);
     srand(time(0));
     for (unsigned int iter = 0; iter < 100; ++iter) {
+        c = zebra.getCols();
+        r = zebra.getRows();
         for (unsigned int step=0; step<1e7; ++step) {
             float proc = dis(generator); // Chooses random process
             short int i = rand() % r; // Chooses random lattice point
@@ -203,15 +205,15 @@ int main()
             }
         }
         string iter_num = to_string(iter + 1);
-        if (iter_num.length == 1){
+        if (iter_num.length() == 1){
             iter_num = "000" + iter_num;
         } else if (iter_num.length() == 2){
             iter_num = "00" + iter_num;
         } else if (iter_num.length() == 3){
             iter_num = "0" + iter_num;
         }
-        
-        string outname = "csvOutputs/img_" + to_string(iter + 1) + ".csv";
+
+        string outname = "csvOutputs/img_" + iter_num + ".csv";
         zebra.export2csv(outname);
 
         // Perform Growth

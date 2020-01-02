@@ -53,11 +53,10 @@ void Neighbor::grow1D(bool extend) {
     //Delete old array
     for(int delcount=0; delcount < cols; ++delcount){
         delete [] array[delcount];
+        array[delcount] = newarray[delcount];
     }
-    delete [] array;
 
     //Reassign to proper names
-    array = newarray;
     cols = newcols;
 
     //Re-generate new values

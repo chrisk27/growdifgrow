@@ -35,7 +35,7 @@ GrowArray::~GrowArray() {
     delete &cols;
 }
 
-// Growth Functions - Blank
+// Growth Functions
 void GrowArray::grow1D(bool extend) { // will grow cols by 1
     unsigned short newcols = cols + 1;
     
@@ -43,28 +43,29 @@ void GrowArray::grow1D(bool extend) { // will grow cols by 1
     unsigned short** newarray = new unsigned short* [rows];
     for (int count = 0; count < newcols; ++count){
         newarray[count] = new unsigned short [newcols];
+        memset(newarray[count], 0, newcols*sizeof(unsigned short));
     }
 
-    //Reassign values into new array and adds new values
-    for (int i=0; i < rows; ++i){
-        for (int j=0; j < cols; ++j){
+    //Fill New array
+    for (int i=0; i<rows; ++i) { 
+        for (int j=0; j<cols; ++j) {
             newarray[i][j] = array[i][j];
         }
         if (extend == false) {
             newarray[i][newcols - 1] = 0;
         } else {
-            newarray[i][newcols - 1] = newarray[i][newcols - 2];
+            newarray[i][cols] = newarray[i][cols];
         }
     }
 
-    //Delete old array
+    //Delete old values and re-aim
     for(int delcount=0; delcount < cols; ++delcount){
         delete [] array[delcount];
+        array[delcount] = newarray[delcount];
     }
-    delete [] array;
+    
 
     //Reassign to proper names
-    array = newarray;
     cols = newcols;
 }
 
@@ -72,13 +73,22 @@ void GrowArray::grow2D(bool extend) {
 
 }
 
+// Access Protected Dimensions
+unsigned short int GrowArray::getCols() {
+    return cols;
+}
+
+unsigned short int GrowArray::getRows() {
+    return rows;
+}
+
 // Cleanup and Export
 void GrowArray::export2csv(string name) {
     ofstream tmpfilee;
     tmpfilee.open(name);
-    for (int i=0; i<rows; i++) {
+    for (int i=0; i<rows; ++i) {
         tmpfilee << to_string(array[i][0]);
-        for (int j=1; j<cols; j++) {
+        for (int j=1; j<cols; ++j) {
             tmpfilee << "," << to_string(array[i][j]);    
         }
         tmpfilee << endl;
