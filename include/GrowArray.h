@@ -18,7 +18,7 @@ public:
     void grow2D(bool extend = false);
 
     //Vector (for Dynamic Allocation)
-    vector<vector<unsigned short> > array;
+    std::vector<std::vector<unsigned short> > array;
     unsigned short int getCols();
     unsigned short int getRows();
     

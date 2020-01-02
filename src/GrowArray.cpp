@@ -31,10 +31,7 @@ GrowArray::GrowArray(int i, int j) : rows(i), cols(j) {
 }
 
 // Destructor
-GrowArray::~GrowArray() {
-    delete &rows;
-    delete &cols;
-}
+GrowArray::~GrowArray() {}
 
 // Growth Functions
 void GrowArray::grow1D(bool extend) { // will grow cols by 1
