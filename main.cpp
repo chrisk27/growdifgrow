@@ -5,6 +5,7 @@
 #include <ctime>
 #include <random>
 #include <string>
+#include <fstream>
 
 #include "include/GrowArray.h"
 #include "include/ZArray.h"
@@ -27,6 +28,9 @@ int main()
     cin >> c;
     cout << "Please enter the characteristic distance h: ";
     cin >> h;
+
+    short unsigned int r0 = r;  //Initial Condtions (to export)
+    short unsigned int c0 = c;
 
 
     // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -77,10 +81,15 @@ int main()
     mt19937 generator ((int) time(0));
     uniform_real_distribution<float> dis(0.0, 1.0);
     srand(time(0));
-    for (unsigned int iter = 0; iter < 100; ++iter) {
+
+    unsigned long long int totalSteps = 1e9;
+    unsigned long long int stepsPerGrowth = 1e7;
+    unsigned long long int imgPerGrowth = stepsPerGrowth;
+
+    for (unsigned int iter = 0; iter < totalSteps / stepsPerGrowth; ++iter) {
         c = zebra.getCols();
         r = zebra.getRows();
-        for (unsigned int step=0; step<1e7; ++step) {
+        for (unsigned long int step=0; step < stepsPerGrowth; ++step) {
             float proc = dis(generator); // Chooses random process
             short int i = rand() % r; // Chooses random lattice point
             short int j = rand() % c;
@@ -219,12 +228,34 @@ int main()
         // Perform Growth
         if (iter != 99) {
             zebra.grow1D(false);
-            ir.grow1D(false);
+            ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
             up.grow1D(false);
             down.grow1D(false);
             left.grow1D(false);
             right.grow1D(false);
         }
     }
+
+    // Export conditions to csv
+    string csvCondTitle = "csvOutputs/conditions.csv";
+    ofstream csvfile;
+    csvfile.open(csvCondTitle);
+
+    csvfile << 'Initial_Rows' << 'Initial_Columns' << 'h'; 
+    csvfile << 'Total_Steps' << 'Steps_per_Growth' << 'Images_per_Growth';
+    csvfile << 'Final_Rows' << 'Final_Columns';
+    csvfile << 'bx' << 'bm' << 'dx' << 'dm';
+    csvfile << 'sm' << 'sx' << 'lx' << endl;
+
+    csvfile << to_string(r0) << to_string(c0) << to_string(h);
+    csvfile << to_string(totalSteps) << to_string(stepsPerGrowth) << to_string(imgPerGrowth);
+    csvfile << to_string(r) << to_string(c);
+    csvfile << to_string(bx) << to_string(bm) << to_string(dx) << to_string(dm);
+    csvfile << to_string(sm) << to_string(sx) << to_string(lx) << endl;
+
+    csvfile.close();
+
+
+
     cout << "Completed Simulation" << endl;
 }
