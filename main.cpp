@@ -7,6 +7,11 @@
 #include <string>
 #include <fstream>
 
+#include<boost/filesystem/config.hpp>
+#include<boost/filesystem/operations.hpp>
+#include<boost/filesystem/path.hpp>
+
+
 #include "include/GrowArray.h"
 #include "include/ZArray.h"
 #include "include/Irid.h"
@@ -16,6 +21,15 @@ using namespace std;
 
 int main()
 {
+
+    // Make new folder to put today's simulations
+    time_t now = time(0);
+
+    tm *ltm = localtime(&now);
+
+    string basepath = "/home/chris/projects/difgrow_mc_sims/";  // This is the basic path, where I will dump all of the simulations that I run
+
+
     // Ask for experimental parameters
     short unsigned int r;
     short unsigned int c;
@@ -32,9 +46,9 @@ int main()
     short unsigned int r0 = r;  //Initial Condtions (to export)
     short unsigned int c0 = c;
 
-    unsigned long long int totalSteps = 1e10;
-    unsigned long long int stepsPerGrowth = 2e8;
-    unsigned long long int imgPerGrowth = stepsPerGrowth / 20;
+    unsigned long long int totalSteps = 1e9;
+    unsigned long long int stepsPerGrowth = 2e7;
+    unsigned long long int imgPerGrowth = stepsPerGrowth / 10;
 
 
     // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
