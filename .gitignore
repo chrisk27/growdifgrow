@@ -38,6 +38,7 @@ tmpOutput.png
 *.csv#
 *.csv
 csvOutputs/
+csv*/
 
 # Builds
 build/

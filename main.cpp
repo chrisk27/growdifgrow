@@ -32,9 +32,9 @@ int main()
     short unsigned int r0 = r;  //Initial Condtions (to export)
     short unsigned int c0 = c;
 
-    unsigned long long int totalSteps = 1e9;
-    unsigned long long int stepsPerGrowth = 2e7;
-    unsigned long long int imgPerGrowth = stepsPerGrowth / 2;
+    unsigned long long int totalSteps = 1e10;
+    unsigned long long int stepsPerGrowth = 2e8;
+    unsigned long long int imgPerGrowth = stepsPerGrowth / 20;
 
 
     // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -62,7 +62,7 @@ int main()
     zebra.BlankArray();
 
     Irid ir(r, c); // Iridophore array, for guiding the patterns
-    ir.Blank();
+    ir.Band(5);
 
     Neighbor up(r, c); // A neighbor matrix to pull array values from
     up.udshift = -1;
@@ -87,7 +87,7 @@ int main()
     srand(time(0));
 
 
-    for (unsigned int iter = 0; iter < totalSteps; ++iter) {
+    for (unsigned long long int iter = 0; iter < totalSteps; ++iter) {
         c = zebra.getCols();
         r = zebra.getRows();
  //       for (unsigned long int step=0; step < stepsPerGrowth; ++step) {
@@ -219,10 +219,12 @@ int main()
         if (iter % imgPerGrowth == 0) {
             string iter_num = to_string(iter / imgPerGrowth);
             if (iter_num.length() == 1){
-                iter_num = "000" + iter_num;
+                iter_num = "0000" + iter_num;
             } else if (iter_num.length() == 2){
-                iter_num = "00" + iter_num;
+                iter_num = "000" + iter_num;
             } else if (iter_num.length() == 3){
+                iter_num = "00" + iter_num;
+            }else if (iter_num.length() == 4){
                 iter_num = "0" + iter_num;
             }
 
