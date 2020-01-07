@@ -11,10 +11,14 @@ public:
     Irid(int i);
     Irid(int i, int j);
     ~Irid();
+
     //Generator Functions
     void Blank();
     void Band(int bandwidth = 1);
-    void Random(float probability = 0);    
+    void Random(float probability = 0);
+
+    //Existance Functions
+    bool checkExist();
 
 };
 

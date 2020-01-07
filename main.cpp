@@ -292,6 +292,14 @@ int main()
         }
     }
 
+    // Check if there are iridophores
+    string iridAns;
+    if (ir.checkExist()) {
+        iridAns = "True";
+    } else {
+        iridAns = "False";
+    }
+
     // Export conditions to csv
     string csvCondTitle = saveSim + "/conditions.csv";
     ofstream csvfile;
@@ -299,13 +307,13 @@ int main()
 
     csvfile << "Initial_Rows" << "," << "Initial_Columns" << "," << "h" << "," ; 
     csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Images_per_Growth" << "," ;
-    csvfile << "Final_Rows" << "," << "Final_Columns" << "," ;
+    csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
     csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
     csvfile << "sm" << "," << "sx" << "," << "lx" << endl;
 
     csvfile << to_string(r0) << "," << to_string(c0) << "," << to_string(h) << ",";
     csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(imgPerGrowth)<< "," ;
-    csvfile << to_string(r) << "," << to_string(c)<< "," ;
+    csvfile << to_string(r) << "," << to_string(c) << "," << iridAns << "," ;
     csvfile << to_string(bx) << "," << to_string(bm) << "," << to_string(dx) << "," << to_string(dm) << "," ;
     csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << endl;
 

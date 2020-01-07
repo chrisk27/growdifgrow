@@ -56,3 +56,15 @@ void Irid::Random(float probability) {
     }
 }
 
+// Check to see if there are any iridophores in sim
+bool Irid::checkExist() {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            if (array[i][j] != 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
