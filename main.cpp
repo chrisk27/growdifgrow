@@ -7,10 +7,7 @@
 #include <string>
 #include <fstream>
 
-#include<boost/filesystem/config.hpp>
-#include<boost/filesystem/operations.hpp>
-#include<boost/filesystem/path.hpp>
-
+#include<boost/filesystem.hpp>
 
 #include "include/GrowArray.h"
 #include "include/ZArray.h"
@@ -27,21 +24,59 @@ int main()
 
     tm *ltm = localtime(&now);
 
-    string basepath = "/home/chris/projects/difgrow_mc_sims/";  // This is the basic path, where I will dump all of the simulations that I run
+    std::string basepath = "/home/chris/projects/difgrow_mc_sims/";  // This is the basic path, where I will dump all of the simulations that I run
+    std::string Year = to_string(1900 + ltm->tm_year);
+    std::string Month = to_string(1 + ltm->tm_mon);
+    if (Month.length() == 1) {
+        Month = "0" + Month;
+    }
+    std::string Day = to_string(ltm->tm_mday);
+    if (Day.length() == 1){
+        Day = "0" + Day;
+    }
+    std::string folderName = Year.substr(2, 2) + "_" + Month + "_" + Day;
+    std::string mainDir = basepath + folderName;
 
+    boost::filesystem::path destination (mainDir);
+    if (not boost::filesystem::is_directory(destination)) {  // Creates a new folder for the day if one doesn't already exist
+        boost::filesystem::create_directory(destination);
+    }
+
+    // Create New Folder for this specific simulation
+    int cnt = count_if(  // Counts number of files currently in directory
+        boost::filesystem::directory_iterator(destination),
+        boost::filesystem::directory_iterator(),
+        static_cast<bool(*)(const boost::filesystem::path&)>(boost::filesystem::is_regular_file)
+    ) + 1; // Adds one so I can name the next folder in the directory
+
+    std::string runNum = to_string(cnt);
+    if (runNum.length() == 1){
+        runNum = "000" + runNum;
+    } else if (runNum.length() == 2){
+        runNum = "00" + runNum;
+    } else if (runNum.length() == 3){
+        runNum = "0" + runNum;
+    }
+
+    std::string saveSim = mainDir + "/" + runNum;
+    boost::filesystem::path savePlace (saveSim);
+    if (not boost::filesystem::is_directory(savePlace)) {  // Creates the folder I'll actually save this simulation into
+        boost::filesystem::create_directory(savePlace);
+    }
 
     // Ask for experimental parameters
     short unsigned int r;
     short unsigned int c;
     short unsigned int h;
 
-    cout << "All initialization values should be integers."<< endl;
-    cout << "Please enter the number of rows: ";
+    std::cout << "All initialization values should be integers."<< endl;
+    std::cout << "Please enter the number of rows: ";
     cin >> r;
-    cout << "Please enter the number of columns: ";
+    std::cout << "Please enter the number of columns: ";
     cin >> c;
-    cout << "Please enter the characteristic distance h: ";
+    std::cout << "Please enter the characteristic distance h: ";
     cin >> h;
+    std::cout << endl;
 
     short unsigned int r0 = r;  //Initial Condtions (to export)
     short unsigned int c0 = c;
@@ -225,7 +260,7 @@ int main()
         }
 
         else {
-            cout << "Error: Incorrect number generated" << endl;
+            std::cout << "Error: Incorrect number generated" << endl;
         }
 //        }
 
@@ -242,7 +277,7 @@ int main()
                 iter_num = "0" + iter_num;
             }
 
-            string outname = "csvOutputs/img_" + iter_num + ".csv";
+            string outname = saveSim + "/img_" + iter_num + ".csv";
             zebra.export2csv(outname);
         }
 
@@ -258,7 +293,7 @@ int main()
     }
 
     // Export conditions to csv
-    string csvCondTitle = "csvOutputs/conditions.csv";
+    string csvCondTitle = saveSim + "/conditions.csv";
     ofstream csvfile;
     csvfile.open(csvCondTitle);
 
@@ -278,5 +313,5 @@ int main()
 
 
 
-    cout << "Completed Simulation" << endl;
+    std::cout << "Completed Simulation" << endl;
 }
