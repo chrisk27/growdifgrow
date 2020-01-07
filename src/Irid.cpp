@@ -33,8 +33,8 @@ void Irid::Band(int bandwidth) {
         }
     }
     if (bandwidth > 0) {
-        for (int i=floor(rows/2 - bandwidth/2); i < floor(rows/2 + bandwidth/2 - 1); ++i) {
-            for (int j=0; j<cols; ++j) {
+        for (int i = ((rows - bandwidth) / 2); i < ((rows + bandwidth) / 2); ++i) {
+            for (int j=0; j < cols; ++j) {
                 array[i][j] = 1;
             }
         }

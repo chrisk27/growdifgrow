@@ -43,7 +43,8 @@ int main()
     }
 
 
-    // Create New Folder for this specific simulation
+    // Create New Folder for this specific simulation 
+    // NOTE:: This is really ugly, there's got to be a better way to do this with boost::filesystem::directory_iterator
     bool foundFile = true;
     short unsigned cnt = 1;
     std::string saveSim;
