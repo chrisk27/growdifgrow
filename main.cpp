@@ -42,27 +42,50 @@ int main()
         boost::filesystem::create_directory(destination);
     }
 
+
     // Create New Folder for this specific simulation
-    int cnt = count_if(  // Counts number of files currently in directory
-        boost::filesystem::directory_iterator(destination),
-        boost::filesystem::directory_iterator(),
-        static_cast<bool(*)(const boost::filesystem::path&)>(boost::filesystem::is_regular_file)
-    ) + 1; // Adds one so I can name the next folder in the directory
+    bool foundFile = true;
+    short unsigned cnt = 1;
+    std::string saveSim;
+    
+    while (foundFile) {
 
-    std::string runNum = to_string(cnt);
-    if (runNum.length() == 1){
-        runNum = "000" + runNum;
-    } else if (runNum.length() == 2){
-        runNum = "00" + runNum;
-    } else if (runNum.length() == 3){
-        runNum = "0" + runNum;
+        //Transforms Count into a Path String
+        std::string runNum = to_string(cnt);
+        if (runNum.length() == 1){
+            runNum = "000" + runNum;
+        } else if (runNum.length() == 2){
+            runNum = "00" + runNum;
+        } else if (runNum.length() == 3){
+            runNum = "0" + runNum;
+        }
+        saveSim = mainDir + "/" + runNum;
+        boost::filesystem::path CheckPath (saveSim);
+
+        //Checks to see if it's already a directory. If not, make one and then end
+        if (boost::filesystem::is_directory(CheckPath)) {
+            cnt = cnt + 1;
+        } else {
+            boost::filesystem::create_directory(CheckPath);
+            foundFile = false;
+        }
     }
 
-    std::string saveSim = mainDir + "/" + runNum;
-    boost::filesystem::path savePlace (saveSim);
-    if (not boost::filesystem::is_directory(savePlace)) {  // Creates the folder I'll actually save this simulation into
-        boost::filesystem::create_directory(savePlace);
-    }
+
+    //std::string runNum = to_string(cnt);
+    //if (runNum.length() == 1){
+    //    runNum = "000" + runNum;
+    //} else if (runNum.length() == 2){
+    //    runNum = "00" + runNum;
+    //} else if (runNum.length() == 3){
+    //    runNum = "0" + runNum;
+    //}
+
+    //std::string saveSim = mainDir + "/" + runNum;
+    //boost::filesystem::path savePlace (saveSim);
+    //if (not boost::filesystem::is_directory(savePlace)) {  // Creates the folder I'll actually save this simulation into
+    //    boost::filesystem::create_directory(savePlace);
+    //}
 
     // Ask for experimental parameters
     short unsigned int r;
@@ -111,7 +134,7 @@ int main()
     zebra.BlankArray();
 
     Irid ir(r, c); // Iridophore array, for guiding the patterns
-    ir.Band(5);
+    ir.Blank();
 
     Neighbor up(r, c); // A neighbor matrix to pull array values from
     up.udshift = -1;
