@@ -1,6 +1,7 @@
 #include <math.h>
 #include <array>
 #include <iostream>
+#include <limits.h>
 #include "Neighbor.h"
 
 using namespace std;
@@ -40,11 +41,36 @@ void Neighbor::Generate() {
     }
 }
 
+// Zero-Flux Boundary Condition Generator
+void Neighbor::GenerateZFBC() {
+    for (short int i=0; i < rows; ++i){
+        for (short int j=0; j < cols; ++j){
+            if ((lrshift != 0) && (udshift == 0)) {
+                if ((i + lrshift < 0) | (i + lrshift > rows - 1)) {
+                    array[i][j] = USHRT_MAX;
+                } else {
+                    array[i][j] = i + lrshift;
+                }                   
+            } else if ((lrshift == 0) && (udshift != 0)) {
+                if ((j + udshift < 0) | (j + udshift > rows - 1)) {
+                    array[i][j] = USHRT_MAX;
+                } else {
+                    array[i][j] = j + udshift;
+                }
+            } else if ((lrshift == 0) && (udshift == 0)) {
+                cout << "Need to define a shift for Neighbors" << endl;
+            } else {
+                cout << "Error: Only one directional shift supported at this time" << endl;
+            }
+        }
+    }
+}
+
 //Growth functions  //Note: extend shouldn't do anything, just there as placeholder to match form of parent function (necessary to override)
 void Neighbor::grow1D(bool extend) { 
 
     //Add one space to each row
-     int numRows = array.size();
+    int numRows = array.size();
     for (int i =0; i < numRows; ++i){
         array[i].push_back(0);
     }
@@ -54,7 +80,7 @@ void Neighbor::grow1D(bool extend) {
     }
     
     //Re-generate new values
-    Generate();
+    GenerateZFBC();
 }
 
 void Neighbor::grow2D(bool extend) {

@@ -7,6 +7,7 @@
 #include <random>
 #include <string>
 #include <fstream>
+#include <limits.h>
 
 #include<boost/filesystem.hpp>
 
@@ -45,7 +46,7 @@ int main()
 
 
     // Start loop for each specific stepsPerGrowth
-    list<unsigned long long> numSteps { uint64_t(1e7), uint64_t(2e7), uint64_t(5e7), uint64_t(1e8), uint64_t(1e6), uint64_t(2e6), uint64_t(5e6)};
+    list<unsigned long long> numSteps { uint64_t(5e6), uint64_t(1e7), uint64_t(2e7), uint64_t(5e7), uint64_t(1e8), uint64_t(2e8), uint64_t(5e8), uint64_t(1e9)};
 
     for (auto sPG = numSteps.begin(); sPG != numSteps.end(); ++sPG) {
         unsigned long long stepsPerGrowth = *sPG;
@@ -95,9 +96,9 @@ int main()
         short unsigned int r0 = r;  //Initial Condtions (to export)
         short unsigned int c0 = c;
 
-        unsigned long long int totalSteps = 1e9;
+        unsigned long long int totalSteps = 1e10;
         //unsigned long long int stepsPerGrowth = 2e7;
-        unsigned long long int imgPerSim = 1e6;
+        unsigned long long int imgPerSim = 1e7;
 
 
         // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -129,19 +130,19 @@ int main()
 
         Neighbor up(r, c); // A neighbor matrix to pull array values from
         up.udshift = -1;
-        up.Generate();
+        up.GenerateZFBC();
 
         Neighbor down(r, c);
         down.udshift = 1;
-        down.Generate();
+        down.GenerateZFBC();
 
         Neighbor left(r, c);
         left.lrshift = -1;
-        left.Generate();
+        left.GenerateZFBC();
 
         Neighbor right(r, c);
         right.lrshift = 1;
-        right.Generate();
+        right.GenerateZFBC();
 
 
         //Run Simulation by looping through each event. Will do 10^9 steps
@@ -164,19 +165,13 @@ int main()
                     float cosangle = cos(angle);
                     float sinangle = sin(angle);
                     short int inew = rint(cosangle * h + i);
-                    if (inew > r - 1){
-                        inew = inew % r;    
-                    } else if (inew < 0) {
-                        inew = inew + r;
-                    }
-                    short int jnew = rint(sinangle * h + j);
-                    if (jnew > c -1){
-                        jnew = jnew % c;
-                    } else if (jnew < 0) {
-                        jnew = jnew + c;
-                    }
-                    if (zebra.array[inew][jnew] == 1) {
-                        zebra.array[i][j] = 2;
+                    if ((inew < r) && (inew >= 0)) {  // This nested if run checks to see if it falls within the experimental domain
+                        short int jnew = rint(sinangle * h + j);
+                        if ((jnew < c) && (jnew >= 0)) {
+                            if (zebra.array[inew][jnew] == 1) {
+                                zebra.array[i][j] = 2;  // Creates melanophore
+                            }
+                        }
                     }
                 }
             }
@@ -185,28 +180,36 @@ int main()
                 if (zebra.array[i][j] == 1) {
                     switch(rand() % 4) {
                         case 0: { //Above Neighbor
-                            if (zebra.array[i][up.array[i][j]] == 2) {
-                                zebra.array[i][j] = 0;
+                            if (up.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[i][up.array[i][j]] == 2) {
+                                    zebra.array[i][j] = 0;
+                                }
+                                break;
                             }
-                            break;
                         }
                         case 1: { //Below Neighbor
-                            if (zebra.array[i][down.array[i][j]] == 2) {
-                                zebra.array[i][j] = 0;
+                            if (down.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[i][down.array[i][j]] == 2) {
+                                    zebra.array[i][j] = 0;
+                                }
+                                break;    
                             }
-                            break;
                         }
                         case 2: { //Left Neighbor
-                            if (zebra.array[left.array[i][j]][j] == 2) {
-                                zebra.array[i][j] = 0;
+                            if (left.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[left.array[i][j]][j] == 2) {
+                                    zebra.array[i][j] = 0;
+                                }
+                                break;
                             }
-                            break;
                         }
                         case 3: { //Right Neighbor
-                            if (zebra.array[right.array[i][j]][j] == 2) {
-                                zebra.array[i][j] = 0;  
+                            if (right.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[right.array[i][j]][j] == 2) {
+                                    zebra.array[i][j] = 0;  
+                                }
+                                break;
                             }
-                            break;
                         }
                         default: {
                             break;
@@ -219,28 +222,36 @@ int main()
                 if (zebra.array[i][j] == 2) {
                     switch(rand() % 4) {
                         case 0: { //Above Neighbor
-                            if (zebra.array[i][up.array[i][j]] == 1) {
-                                zebra.array[i][j] = 0;
+                            if (up.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[i][up.array[i][j]] == 1) {
+                                    zebra.array[i][j] = 0;
+                                }
+                                break;
                             }
-                            break;
                         }
                         case 1: { //Below Neighbor
-                            if (zebra.array[i][down.array[i][j]] == 1) {
-                                zebra.array[i][j] = 0;
+                            if (down.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[i][down.array[i][j]] == 1) {
+                                    zebra.array[i][j] = 0;
+                                }
+                                break;    
                             }
-                            break;
                         }
                         case 2: { //Left Neighbor
-                            if (zebra.array[left.array[i][j]][j] == 1) {
-                                zebra.array[i][j] = 0;
+                            if (left.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[left.array[i][j]][j] == 1) {
+                                    zebra.array[i][j] = 0;
+                                }
+                                break;
                             }
-                            break;
                         }
                         case 3: { //Right Neighbor
-                            if (zebra.array[right.array[i][j]][j] == 1) {
-                                zebra.array[i][j] = 0;  
+                            if (right.array[i][j] != USHRT_MAX) {
+                                if (zebra.array[right.array[i][j]][j] == 1) {
+                                    zebra.array[i][j] = 0;  
+                                }
+                                break;
                             }
-                            break;
                         }
                         default: {
                             break;
