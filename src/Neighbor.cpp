@@ -52,7 +52,7 @@ void Neighbor::GenerateZFBC() {
                     array[i][j] = i + lrshift;
                 }                   
             } else if ((lrshift == 0) && (udshift != 0)) {
-                if ((j + udshift < 0) | (j + udshift > rows - 1)) {
+                if ((j + udshift < 0) | (j + udshift > cols - 1)) {
                     array[i][j] = USHRT_MAX;
                 } else {
                     array[i][j] = j + udshift;
