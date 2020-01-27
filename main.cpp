@@ -89,7 +89,7 @@ int main()
 
             // Ask for experimental parameters
             short unsigned int r = 200;
-            short unsigned int c = 1;
+            short unsigned int c = 2 * h;
 //            short unsigned int h = 12;
 
             //std::cout << "All initialization values should be integers."<< endl;
@@ -104,7 +104,7 @@ int main()
             short unsigned int r0 = r;  //Initial Condtions (to export)
             short unsigned int c0 = c;
 
-            unsigned long long int totalSteps = stepsPerGrowth * 100;
+            unsigned long long int totalSteps = stepsPerGrowth * 200;
             //unsigned long long int stepsPerGrowth = 2e7;
             unsigned long long int imgPerSim = totalSteps / 1000;
 

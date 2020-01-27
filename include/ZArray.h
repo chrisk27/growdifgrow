@@ -11,9 +11,11 @@ public:
     ZArray(int i);
     ZArray(int i, int j);
     ~ZArray();
+
     // Initialization functions
     void BlankArray(); 
     void RandomArray();
+    void MelanoBand(unsigned short bandwidth = 1, float randomXanProb = 0);
     
 };
 
