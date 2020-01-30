@@ -160,17 +160,23 @@ int main()
                         float angle = dis(generator) * 2 * M_PI;
                         float cosangle = cos(angle);
                         float sinangle = sin(angle);
+
                         short int inew = rint(cosangle * h + i);
                         if (inew > r - 1){
                             inew = inew % r;    
                         } else if (inew < 0) {
-                            inew = inew + r;
+                            while (inew < 0) {
+                                inew = inew + r;
+                            }
                         }
+
                         short int jnew = rint(sinangle * h + j);
                         if (jnew > c -1){
                             jnew = jnew % c;
                         } else if (jnew < 0) {
-                            jnew = jnew + c;
+                            while (jnew < 0) {
+                                jnew = jnew + c;
+                            }
                         }
                         if (zebra.array[inew][jnew] == 1) {
                             zebra.array[i][j] = 2;
