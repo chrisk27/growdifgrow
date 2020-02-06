@@ -17,7 +17,7 @@ public:
 
     // Growth - Need to override from parent class since we use these differently
     void grow1D(bool extend);
-    void grow2D(bool extend);
+    void grow2DBasic(bool vertextend, bool horizextend);
 
     // Shifts
     short lrshift {0};

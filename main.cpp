@@ -83,15 +83,6 @@ int main()
         short unsigned int c = 1;
         short unsigned int h = 12;
 
-        //std::cout << "All initialization values should be integers."<< endl;
-        //std::cout << "Please enter the number of rows: ";
-        //cin >> r;
-        //std::cout << "Please enter the number of columns: ";
-        //cin >> c;
-        //std::cout << "Please enter the characteristic distance h: ";
-        //cin >> h;
-        //std::cout << endl;
-
         short unsigned int r0 = r;  //Initial Condtions (to export)
         short unsigned int c0 = c;
 
@@ -153,7 +144,7 @@ int main()
         for (unsigned long long int iter = 0; iter < totalSteps; ++iter) {
             c = zebra.getCols();
             r = zebra.getRows();
-    //       for (unsigned long int step=0; step < stepsPerGrowth; ++step) {
+
             float proc = dis(generator); // Chooses random process
             short int i = rand() % r; // Chooses random lattice point
             short int j = rand() % c;
@@ -280,7 +271,6 @@ int main()
             else {
                 std::cout << "Error: Incorrect number generated" << endl;
             }
-    //        }
 
             // Export image
             if (iter % imgPerSim == 0) {
@@ -301,12 +291,12 @@ int main()
 
             // Perform Growth
             if (iter % stepsPerGrowth == 0) {
-                zebra.grow1D(false);
-                ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
-                up.grow1D(false);
-                down.grow1D(false);
-                left.grow1D(false);
-                right.grow1D(false);
+                zebra.grow2DBasic(false, false);
+                ir.grow2DBasic(true, true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
+                up.grow2DBasic(false, false);
+                down.grow2DBasic(false, false);
+                left.grow2DBasic(false, false);
+                right.grow2DBasic(false, false);
             }
         }
 

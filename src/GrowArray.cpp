@@ -53,7 +53,44 @@ void GrowArray::grow1D(bool extend) { // will grow cols by 1
     }
 }
 
-void GrowArray::grow2D(bool extend) {
+void GrowArray::grow2DBasic(bool vertextend, bool horizextend) {
+    // This function will add one row to the bottom of the array (since it's periodic BC currently) and then increase the column width by 1
+
+    // Create a new row
+    vector<unsigned short> newRow;
+    if (vertextend == false) {
+        for (unsigned short k = 0; k < cols; ++k) {
+            newRow.push_back(0);
+        }
+    } else {
+        for (unsigned short k = 0; k < cols; ++k) {
+            newRow.push_back(array[rows - 1][k]);
+        }
+    }
+
+    // Add new row to the end of the array
+    array.push_back(newRow);
+
+    // Add one more column to each vector
+    int numRows = array.size();
+    for (int i =0; i < numRows; ++i){
+        if (horizextend == false){
+            array[i].push_back(0);
+        } else {
+            unsigned short oldVal = array[i].back();
+            array[i].push_back(oldVal);
+        }
+    }
+
+    // Increase rows and cols size
+    rows = rows + 1;
+    cols = cols + 1;
+    if (array.size() != rows){
+        throw invalid_argument("Error: row definition incorrect");
+    }
+    if (array[rows - 1].size() != cols){
+        throw invalid_argument("Error: column definition incorrect");
+    }
 
 }
 

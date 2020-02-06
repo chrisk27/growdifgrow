@@ -15,7 +15,7 @@ public:
 
     //Growth Functions-blank cells
     void grow1D(bool extend = false);
-    void grow2D(bool extend = false);
+    void grow2DBasic(bool vertextend = false, bool horizextend = false);
 
     //Vector (for Dynamic Allocation)
     std::vector<std::vector<unsigned short> > array;

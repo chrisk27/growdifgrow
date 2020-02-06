@@ -44,7 +44,7 @@ void Neighbor::Generate() {
 void Neighbor::grow1D(bool extend) { 
 
     //Add one space to each row
-     int numRows = array.size();
+    int numRows = array.size();
     for (int i =0; i < numRows; ++i){
         array[i].push_back(0);
     }
@@ -57,6 +57,29 @@ void Neighbor::grow1D(bool extend) {
     Generate();
 }
 
-void Neighbor::grow2D(bool extend) {
+void Neighbor::grow2DBasic(bool vertextend, bool horizextend) {
 
+    //Add a new row
+    vector<unsigned short> newRow;
+    for (unsigned short k = 0; k < cols; ++k) {
+        newRow.push_back(0);
+    }
+    array.push_back(newRow);
+    rows = rows + 1;
+
+    //Add new column
+    for (int i = 0; i < rows; ++i){
+        array[i].push_back(0);
+    }
+    cols = cols + 1;
+
+    if (array.size() != rows){
+        throw invalid_argument("Error: row definition incorrect");
+    }
+    if (array[rows - 1].size() != cols){
+        throw invalid_argument("Error: column definition incorrect");
+    }
+
+    // Re-generate values (for rectangular array)
+    Generate();
 }
