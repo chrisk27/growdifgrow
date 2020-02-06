@@ -1,7 +1,7 @@
 #include <math.h>
 #include <fstream>
 #include <cstring>
-#include <vector>
+#include <deque>
 
 #include "GrowArray.h"
 
@@ -11,21 +11,21 @@ using namespace std;
 GrowArray::GrowArray() : rows(0), cols(0) {};
 
 GrowArray::GrowArray(int i) : rows(i), cols(i) {  //with one argument, makes square
-    vector<unsigned short> blankRow;
-    for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row vector
+    deque<unsigned short> blankRow;
+    for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row deque
         blankRow.push_back(0);
     }
-    for (unsigned short ll = 0; ll < rows; ++ll){  //fills array with blank vector
+    for (unsigned short ll = 0; ll < rows; ++ll){  //fills array with blank deque
         array.push_back(blankRow);
     }
 }
 
 GrowArray::GrowArray(int i, int j) : rows(i), cols(j) {
-    vector<unsigned short> blankRow;
-    for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row vector
+    deque<unsigned short> blankRow;
+    for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row deque
         blankRow.push_back(0);
     }
-    for (unsigned short ll = 0; ll < rows; ++ll){  //fills array with blank vector
+    for (unsigned short ll = 0; ll < rows; ++ll){  //fills array with blank deque
         array.push_back(blankRow);
     }
 }
@@ -36,7 +36,7 @@ GrowArray::~GrowArray() {}
 // Growth Functions
 void GrowArray::grow1D(bool extend) { // will grow cols by 1
     
-    //Add one more to each column vector
+    //Add one more to each column deque
     int numRows = array.size();
     for (int i =0; i < numRows; ++i){
         if (extend == false){
@@ -48,13 +48,48 @@ void GrowArray::grow1D(bool extend) { // will grow cols by 1
     }
     //Increases column size
     cols = cols + 1;
-    if (array[0].size() != cols){
+    if (array[rows -1].size() != cols){
         throw invalid_argument( "Error: column definition incorrect");
     }
 }
 
-void GrowArray::grow2D(bool extend) {
+void GrowArray::grow2DSquare(bool vertextend, bool horizextend) {
+    // This function grows the square system "radially", i.e. by adding new elements around the previously existing system
 
+    // Add new rows
+    if (vertextend == false) {
+        deque<unsigned short> newRow(cols, 0);
+        array.push_front(newRow);
+        array.push_back(newRow);
+    } else {
+        deque<unsigned short> topRow = array.front();
+        array.push_front(topRow);
+        deque<unsigned short> bottomRow = array.back();
+        array.push_back(bottomRow);
+    }
+    rows = rows + 2;
+
+    // Add new columns
+    if (horizextend == false) {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_front(0);
+            array[j].push_back(0);
+        }
+    } else {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_front(array[j][0]);
+            array[j].push_back(array[j][cols - 1]);
+        }
+    }
+    cols = cols + 2;
+
+    // Error-check
+    if (rows != array.size()){
+        throw invalid_argument("Error in row indexing");
+    }
+    if (cols != array[rows-1].size()){
+        throw invalid_argument("Error in column indexing");
+    }
 }
 
 // Access Protected Dimensions

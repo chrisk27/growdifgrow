@@ -75,7 +75,7 @@ void Neighbor::grow1D(bool extend) {
         array[i].push_back(0);
     }
     cols = cols+1;
-    if (cols != array[1].size()){
+    if (cols != array[0].size()){
         cout << "Error in column indexing" << endl;
     }
     
@@ -83,6 +83,32 @@ void Neighbor::grow1D(bool extend) {
     GenerateZFBC();
 }
 
-void Neighbor::grow2D(bool extend) {
+void Neighbor::grow2DSquare(bool vertextend, bool horizextend) {
 
+    // Add new rows to top and bottom
+    deque<unsigned short> newRow;
+    for (int i = 0; i < cols; ++i){
+        newRow.push_back(0);
+    }
+    array.push_front(newRow);
+    array.push_back(newRow);
+    rows = rows + 2;
+
+    // Adds new columns on sides
+    for (int j = 0; j < rows; ++j) {
+        array[j].push_front(0);
+        array[j].push_back(0);
+    }
+    cols = cols + 2;
+
+    // Re-generate new values
+    GenerateZFBC();
+
+    // Error-check
+    if (rows != array.size()){
+        cout << "Error in row indexing" << endl;
+    }
+    if (cols != array.front().size()){
+        cout << "Error in column indexing" << endl;
+    }
 }

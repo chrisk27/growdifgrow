@@ -2,7 +2,7 @@
 #define __GROWARRAY_H_INCLUDED__
 
 #include<string>
-#include<vector>
+#include<deque>
 
 class GrowArray{
 
@@ -15,10 +15,10 @@ public:
 
     //Growth Functions-blank cells
     void grow1D(bool extend = false);
-    void grow2D(bool extend = false);
+    void grow2DSquare(bool vertextend = false, bool horizextend = false);
 
-    //Vector (for Dynamic Allocation)
-    std::vector<std::vector<unsigned short> > array;
+    //Deque (for Dynamic Allocation and addition on both sides)
+    std::deque<std::deque<unsigned short> > array;
     unsigned short int getCols();
     unsigned short int getRows();
     
