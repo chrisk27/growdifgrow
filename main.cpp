@@ -45,7 +45,7 @@ int main()
 
 
     // Start loop for each specific stepsPerGrowth
-    list<unsigned long long> numSteps { uint64_t(1e7), uint64_t(2e7), uint64_t(5e7), uint64_t(1e8), uint64_t(1e6), uint64_t(2e6), uint64_t(5e6)};
+    list<unsigned long long> numSteps {uint64_t(1e6), uint64_t(2e6), uint64_t(5e6), uint64_t(1e7), uint64_t(2e7), uint64_t(5e7), uint64_t(1e8)};
 
     for (auto sPG = numSteps.begin(); sPG != numSteps.end(); ++sPG) {
         unsigned long long stepsPerGrowth = *sPG;
@@ -79,16 +79,16 @@ int main()
         }
 
         // Ask for experimental parameters
-        short unsigned int r = 100;
+        short unsigned int r = 1;
         short unsigned int c = 1;
-        short unsigned int h = 12;
+        short unsigned int h = 15;
 
         short unsigned int r0 = r;  //Initial Condtions (to export)
         short unsigned int c0 = c;
 
-        unsigned long long int totalSteps = 1e9;
+        unsigned long long int totalSteps = 200 * stepsPerGrowth;
         //unsigned long long int stepsPerGrowth = 2e7;
-        unsigned long long int imgPerSim = 1e6;
+        unsigned long long int imgPerSim = totalSteps / 1000;
 
 
         // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
