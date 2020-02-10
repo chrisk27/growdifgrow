@@ -92,6 +92,48 @@ void GrowArray::grow2DSquare(bool vertextend, bool horizextend) {
     }
 }
 
+void GrowArray::grow2Rows(bool vertextend) {
+    // This function will only grow the number of rows (in both dimensions)
+
+    if (vertextend == false) {
+        deque<unsigned short> newRow(cols, 0);
+        array.push_front(newRow);
+        array.push_back(newRow);
+    } else {
+        deque<unsigned short> topRow = array.front();
+        array.push_front(topRow);
+        deque<unsigned short> bottomRow = array.back();
+        array.push_back(bottomRow);
+    }
+    rows = rows + 2;
+
+    if (rows != array.size()) {
+        throw invalid_argument("Error in row indexing");
+    }
+}
+
+void GrowArray::grow2Cols(bool horizextend) {
+    // This function will only grow the number of cols (in both dimensions)
+
+    if (horizextend == false) {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_front(0);
+            array[j].push_back(0);
+        }
+    } else {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_front(array[j][0]);
+            array[j].push_back(array[j][cols - 1]);
+        }
+    }
+
+    cols = cols + 2;
+
+    if (cols != array[0].size()) {
+        throw invalid_argument("Error in column indexing");
+    }
+}
+
 // Access Protected Dimensions
 unsigned short int GrowArray::getCols() {
     return cols;
