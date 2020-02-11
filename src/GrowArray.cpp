@@ -113,7 +113,7 @@ void GrowArray::grow2Rows(bool vertextend) {
 }
 
 void GrowArray::grow2Cols(bool horizextend) {
-    // This function will only grow the number of cols (in both dimensions)
+    // This function will only grow the number of cols (in both directions)
 
     if (horizextend == false) {
         for (int j = 0; j < rows; ++j) {
@@ -128,6 +128,25 @@ void GrowArray::grow2Cols(bool horizextend) {
     }
 
     cols = cols + 2;
+
+    if (cols != array[0].size()) {
+        throw invalid_argument("Error in column indexing");
+    }
+}
+
+void GrowArray::grow1Col(bool horizextend) {
+    //This function will only grow by one column (on the right)
+
+    if (horizextend == false) {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_back(0);
+        }
+    } else {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_back(array[j][cols - 1]);
+        }
+    }
+    cols = cols + 1;
 
     if (cols != array[0].size()) {
         throw invalid_argument("Error in column indexing");

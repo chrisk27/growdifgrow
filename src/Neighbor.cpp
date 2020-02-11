@@ -136,3 +136,15 @@ void Neighbor::grow2Cols(bool horizextend) {
         cout << "Error in column indexing" << endl;
     }
 }
+
+void Neighbor::grow1Col(bool horizextend) {
+    for (int j = 0; j < rows; ++j) {
+        array[j].push_back(0);
+    }
+    cols = cols + 1;
+    GenerateZFBC();
+
+    if (cols != array[0].size()) {
+        throw invalid_argument("Error in column indexing");
+    }
+}

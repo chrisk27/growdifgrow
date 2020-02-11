@@ -16,6 +16,7 @@ public:
     //Growth Functions-blank cells
     void grow1D(bool extend = false);
     void grow2DSquare(bool vertextend = false, bool horizextend = false);
+    void grow1Col(bool horizextend = false);
     void grow2Rows(bool vertextend = false);
     void grow2Cols(bool horizextend = false);
 
