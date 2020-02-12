@@ -53,7 +53,7 @@ int main()
         unsigned short h = *hL;
 
         // Start loop for each specific stepsPerGrowth
-        list<unsigned long long> numSteps { uint64_t(5e6), uint64_t(1e7), uint64_t(2e7), uint64_t(5e7), uint64_t(1e8)};
+        list<unsigned long long> numSteps {uint64_t(1e7), uint64_t(5e7)};
 
         for (auto sPG = numSteps.begin(); sPG != numSteps.end(); ++sPG) {
             unsigned long long stepsPerGrowth = *sPG;
@@ -88,24 +88,15 @@ int main()
             }
 
             // Ask for experimental parameters
-            short unsigned int r = 200;
-            short unsigned int c = 2 * h;
-//            short unsigned int h = 12;
-
-            //std::cout << "All initialization values should be integers."<< endl;
-            //std::cout << "Please enter the number of rows: ";
-            //cin >> r;
-            //std::cout << "Please enter the number of columns: ";
-            //cin >> c;
-            //std::cout << "Please enter the characteristic distance h: ";
-            //cin >> h;
-            //std::cout << endl;
+            short unsigned int r = 1;
+            short unsigned int c = 1;
+//            short unsigned int h = 15;
 
             short unsigned int r0 = r;  //Initial Condtions (to export)
             short unsigned int c0 = c;
 
+//            unsigned long long int stepsPerGrowth = 5e7;
             unsigned long long int totalSteps = stepsPerGrowth * 200;
-            //unsigned long long int stepsPerGrowth = 2e7;
             unsigned long long int imgPerSim = totalSteps / 1000;
 
 
@@ -162,7 +153,7 @@ int main()
             for (unsigned long long int iter = 0; iter < totalSteps; ++iter) {
                 c = zebra.getCols();
                 r = zebra.getRows();
-        //       for (unsigned long int step=0; step < stepsPerGrowth; ++step) {
+
                 float proc = dis(generator); // Chooses random process
                 short int i = rand() % r; // Chooses random lattice point
                 short int j = rand() % c;
@@ -295,7 +286,6 @@ int main()
                 else {
                     std::cout << "Error: Incorrect number generated" << endl;
                 }
-        //        }
 
                 // Export image
                 if (iter % imgPerSim == 0) {
@@ -315,13 +305,22 @@ int main()
                 }
 
                 // Perform Growth
-                if (iter % stepsPerGrowth == 0) {
-                    zebra.grow1D(false);
-                    ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
-                    up.grow1D(false);
-                    down.grow1D(false);
-                    left.grow1D(false);
-                    right.grow1D(false);
+                if (iter % (stepsPerGrowth / 2) == 0) {
+                    zebra.grow1Col(false);
+                    ir.grow1Col(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
+                    up.grow1Col(false);
+                    down.grow1Col(false);
+                    left.grow1Col(false);
+                    right.grow1Col(false);
+                }
+
+                if (iter % (2*stepsPerGrowth) == 0) {
+                    zebra.grow2Rows(false);
+                    ir.grow2Rows(true);
+                    up.grow2Rows(false);
+                    down.grow2Rows(false);
+                    left.grow2Rows(false);
+                    right.grow2Rows(false);
                 }
             }
 
@@ -339,13 +338,13 @@ int main()
             csvfile.open(csvCondTitle);
 
             csvfile << "Initial_Rows" << "," << "Initial_Columns" << "," << "h" << "," ; 
-            csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Images_per_Growth" << "," ;
+            csvfile << "Total_Steps" << "," << "Steps_per_Growth_Cols" << "," << "Steps_per_Growth_Rows"<< "," << "Images_per_Growth" << "," ;
             csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
             csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
             csvfile << "sm" << "," << "sx" << "," << "lx" << "Boundary Conditions" << endl;
 
             csvfile << to_string(r0) << "," << to_string(c0) << "," << to_string(h) << ",";
-            csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(imgPerSim)<< "," ;
+            csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(stepsPerGrowth*2)<< "," << to_string(imgPerSim)<< "," ;
             csvfile << to_string(r) << "," << to_string(c) << "," << iridAns << "," ;
             csvfile << to_string(bx) << "," << to_string(bm) << "," << to_string(dx) << "," << to_string(dm) << "," ;
             csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << "Zero Flux" << endl;
@@ -359,5 +358,6 @@ int main()
 
         std::cout << "Completed Simulations with h = " << to_string(h) << endl;
     }
-    std::cout << "Completed All Simulations in Double Loop" << endl;
+
+   std::cout << "Completed All Simulations in Double Loop" << endl;
 }
