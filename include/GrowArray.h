@@ -19,14 +19,16 @@ public:
     void grow1Col(bool horizextend = false);
     void grow2Rows(bool vertextend = false);
     void grow2Cols(bool horizextend = false);
+    void growTrap(bool vertextend = false, bool horizextend = false);
 
     //Deque (for Dynamic Allocation and addition on both sides)
     std::deque<std::deque<unsigned short> > array;
+    bool checkExist(int i, int j);
     unsigned short int getCols();
     unsigned short int getRows();
     
     //Finish, clean, and export
-    unsigned short int Rectangularize();
+    void Rectangular_Export(std::string name = "RectOutput.csv");
     void export2csv(std::string name = "Ouput.csv");
 
 protected:

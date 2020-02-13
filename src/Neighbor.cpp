@@ -42,7 +42,7 @@ void Neighbor::Generate() {
 }
 
 // Zero-Flux Boundary Condition Generator
-void Neighbor::GenerateZFBC() {
+void Neighbor::GenerateZFBC_Old() {
     for (short int i=0; i < rows; ++i){
         for (short int j=0; j < cols; ++j){
             if ((lrshift != 0) && (udshift == 0)) {
@@ -66,6 +66,38 @@ void Neighbor::GenerateZFBC() {
     }
 }
 
+// New ZFBC Generator (to work with nonconstant column size)
+void Neighbor::GenerateZFBC() {
+    //First, if it's a left-right shift
+    if ((lrshift != 0) && (udshift == 0)) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < array[i].size(); ++j) {
+                if ((j + lrshift < 0) | (j + lrshift > array[i].size() - 1)) {
+                    array[i][j] = SHRT_MAX;
+                } else {
+                    array[i][j] = j + lrshift;
+                }
+            }
+        }
+    }
+    else if ((lrshift == 0) && (udshift != 0)) {
+        for (int i = 0; i < rows; ++i) {
+            int idx2test = i + udshift;
+            for (int j = 0; j < array[i].size(); ++j) {
+                if ((idx2test < 0) | (idx2test > rows -1)) {
+                    array[i][j] = SHRT_MAX;
+                }
+                else if (checkExist(idx2test, j) == true) {
+                    array[i][j] = idx2test;
+                }
+                else {
+                    array[i][j] = SHRT_MAX;
+                }
+            }
+        }
+    }
+}
+
 //Growth functions  //Note: extend shouldn't do anything, just there as placeholder to match form of parent function (necessary to override)
 void Neighbor::grow1D(bool extend) { 
 
@@ -75,9 +107,9 @@ void Neighbor::grow1D(bool extend) {
         array[i].push_back(0);
     }
     cols = cols+1;
-    if (cols != array[0].size()){
-        cout << "Error in column indexing" << endl;
-    }
+//   if (cols != array[0].size()){
+//        cout << "Error in column indexing" << endl;
+//    }
     
     //Re-generate new values
     GenerateZFBC();
@@ -105,9 +137,9 @@ void Neighbor::grow2DSquare(bool vertextend, bool horizextend) {
     if (rows != array.size()){
         cout << "Error in row indexing" << endl;
     }
-    if (cols != array.front().size()){
-        cout << "Error in column indexing" << endl;
-    }
+//    if (cols != array.front().size()){
+//        cout << "Error in column indexing" << endl;
+//    }
 }
 
 void Neighbor::grow2Rows(bool vertextend) {
@@ -132,9 +164,9 @@ void Neighbor::grow2Cols(bool horizextend) {
 
     GenerateZFBC();
 
-    if (cols != array[0].size()) {
-        cout << "Error in column indexing" << endl;
-    }
+//    if (cols != array[0].size()) {
+//        cout << "Error in column indexing" << endl;
+//    }
 }
 
 void Neighbor::grow1Col(bool horizextend) {
@@ -144,7 +176,29 @@ void Neighbor::grow1Col(bool horizextend) {
     cols = cols + 1;
     GenerateZFBC();
 
-    if (cols != array[0].size()) {
-        throw invalid_argument("Error in column indexing");
+//    if (cols != array[0].size()) {
+//        throw invalid_argument("Error in column indexing");
+//    }
+}
+
+void Neighbor::growTrap(bool vertextend, bool horizextend) {
+    //First, add a column to the left
+    for (unsigned short i = 0; i < rows; ++i) {
+        array[i].push_front(0);
+    }
+
+    //Then, add new rows
+    deque<unsigned short> newDeque(1, 0);
+    array.push_front(newDeque);
+    array.push_back(newDeque);
+
+    //Update indices
+    rows = rows + 2;
+    cols = cols + 1;
+
+    GenerateZFBC();
+
+    if (rows != array.size()) {
+        cout << "Error in row indexing" << endl;
     }
 }

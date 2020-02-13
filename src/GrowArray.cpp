@@ -48,9 +48,9 @@ void GrowArray::grow1D(bool extend) { // will grow cols by 1
     }
     //Increases column size
     cols = cols + 1;
-    if (array[rows -1].size() != cols){
-        throw invalid_argument( "Error: column definition incorrect");
-    }
+//    if (array[rows -1].size() != cols){
+//        throw invalid_argument( "Error: column definition incorrect");
+//    }
 }
 
 void GrowArray::grow2DSquare(bool vertextend, bool horizextend) {
@@ -87,9 +87,9 @@ void GrowArray::grow2DSquare(bool vertextend, bool horizextend) {
     if (rows != array.size()){
         throw invalid_argument("Error in row indexing");
     }
-    if (cols != array[rows-1].size()){
-        throw invalid_argument("Error in column indexing");
-    }
+//    if (cols != array[rows-1].size()){
+//        throw invalid_argument("Error in column indexing");
+//    }
 }
 
 void GrowArray::grow2Rows(bool vertextend) {
@@ -107,9 +107,9 @@ void GrowArray::grow2Rows(bool vertextend) {
     }
     rows = rows + 2;
 
-    if (rows != array.size()) {
-        throw invalid_argument("Error in row indexing");
-    }
+//    if (rows != array.size()) {
+//        throw invalid_argument("Error in row indexing");
+//    }
 }
 
 void GrowArray::grow2Cols(bool horizextend) {
@@ -129,9 +129,9 @@ void GrowArray::grow2Cols(bool horizextend) {
 
     cols = cols + 2;
 
-    if (cols != array[0].size()) {
-        throw invalid_argument("Error in column indexing");
-    }
+//    if (cols != array[0].size()) {
+//        throw invalid_argument("Error in column indexing");
+//    }
 }
 
 void GrowArray::grow1Col(bool horizextend) {
@@ -148,12 +148,58 @@ void GrowArray::grow1Col(bool horizextend) {
     }
     cols = cols + 1;
 
-    if (cols != array[0].size()) {
-        throw invalid_argument("Error in column indexing");
+//    if (cols != array[0].size()) {
+//        throw invalid_argument("Error in column indexing");
+//    }
+}
+
+void GrowArray::growTrap(bool vertextend, bool horizextend) {
+    //Grows the system by a singular column with an extra row and column at the end, so it expands the size
+
+    //First, add new column to the existing rows
+    for (unsigned short i = 0; i < rows; ++i) {
+        if (horizextend == false) {
+            array[i].push_front(0);
+        } else {
+            array[i].push_front(array[i].front());
+        }
+    }
+
+    //Then, add a new deque above and below
+    if (vertextend == false) {
+        deque<unsigned short> newDeque(1, 0);
+        array.push_front(newDeque);
+        array.push_back(newDeque);
+    } else {
+        deque<unsigned short> topDeque(1, array[0].front());
+        array.push_front(topDeque);
+        deque<unsigned short> bottomDeque(1, array[rows-1].front());
+        array.push_back(bottomDeque);
+    }
+
+    //Update indices
+    rows = rows + 2;
+    cols = cols + 1;
+
+    if (rows != array.size()) {
+        throw invalid_argument("Error in row indexing");
     }
 }
 
+
 // Access Protected Dimensions
+bool GrowArray::checkExist(int i, int j) {
+    if ((i < rows) && (i >= 0)) {
+        if ((j >= 0) && (j < array[i].size())) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+    return false;
+    }
+}
+
 unsigned short int GrowArray::getCols() {
     return cols;
 }
@@ -176,8 +222,28 @@ void GrowArray::export2csv(string name) {
     tmpfilee.close();
 }
 
-unsigned short GrowArray::Rectangularize() {
-    return 0;
+void GrowArray::Rectangular_Export(string name) {
+    //Rectangularize
+    deque<deque<unsigned short>> output;
+    for (unsigned short i = 0; i < rows; ++i){
+        deque<unsigned short> thisRow = array[i];
+        for (unsigned short j = thisRow.size() -1; j < cols; ++j) {
+            thisRow.push_back(100);
+        }
+        output.push_back(thisRow);
+    }
+
+    //Export
+    ofstream tmpfilee;
+    tmpfilee.open(name);
+    for (int i=0; i<rows; ++i) {
+        tmpfilee << to_string(output[i][0]);
+        for (int j=1; j<cols; ++j) {
+            tmpfilee << "," << to_string(output[i][j]);    
+        }
+        tmpfilee << endl;
+    }
+    tmpfilee.close();
 }
 
 

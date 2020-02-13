@@ -15,6 +15,7 @@ public:
     // Generators
     void Generate();
     void GenerateZFBC();
+    void GenerateZFBC_Old();
 
     // Growth - Need to override from parent class since we use these differently
     void grow1D(bool extend);
@@ -22,6 +23,7 @@ public:
     void grow1Col(bool horizextend);
     void grow2Rows(bool vertextend);
     void grow2Cols(bool horizextend);
+    void growTrap(bool vertextend, bool horizextend);
 
     // Shifts
     short lrshift {0};
