@@ -134,7 +134,7 @@ void GrowArray::grow2Cols(bool horizextend) {
 //    }
 }
 
-void GrowArray::grow1Col(bool horizextend) {
+void GrowArray::grow1ColBack(bool horizextend) {
     //This function will only grow by one column (on the right)
 
     if (horizextend == false) {
@@ -151,6 +151,21 @@ void GrowArray::grow1Col(bool horizextend) {
 //    if (cols != array[0].size()) {
 //        throw invalid_argument("Error in column indexing");
 //    }
+}
+
+void GrowArray::grow1ColFront(bool horizextend) {
+    //This function will grow by one column (on the left)
+
+    if (horizextend == false) {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_front(0);
+        }
+    } else {
+        for (int j = 0; j < rows; ++j) {
+            array[j].push_front(array[j].front());
+        }
+    }
+    cols = cols + 1;
 }
 
 void GrowArray::growTrap(bool vertextend, bool horizextend) {
@@ -183,6 +198,19 @@ void GrowArray::growTrap(bool vertextend, bool horizextend) {
 
     if (rows != array.size()) {
         throw invalid_argument("Error in row indexing");
+    }
+}
+
+
+// Switch between two different types of growth
+void GrowArray::growthSwitcher(bool vertextend, bool horizextend) {
+    growthCounter = growthCounter + 1;
+
+    if (growthCounter != ratio) {
+        grow1ColFront(horizextend);
+    } else {
+        growTrap(vertextend, horizextend);
+        growthCounter = 0;
     }
 }
 

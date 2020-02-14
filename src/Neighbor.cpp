@@ -169,7 +169,7 @@ void Neighbor::grow2Cols(bool horizextend) {
 //    }
 }
 
-void Neighbor::grow1Col(bool horizextend) {
+void Neighbor::grow1ColBack(bool horizextend) {
     for (int j = 0; j < rows; ++j) {
         array[j].push_back(0);
     }
@@ -179,6 +179,14 @@ void Neighbor::grow1Col(bool horizextend) {
 //    if (cols != array[0].size()) {
 //        throw invalid_argument("Error in column indexing");
 //    }
+}
+
+void Neighbor::grow1ColFront(bool horizextend) {
+    for (int j = 0; j < rows; ++j) {
+        array[j].push_front(0);
+    }
+    cols = cols + 1;
+    GenerateZFBC();
 }
 
 void Neighbor::growTrap(bool vertextend, bool horizextend) {

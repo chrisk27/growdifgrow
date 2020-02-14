@@ -26,7 +26,7 @@ int main()
 
     tm *ltm = localtime(&now);
 
-    std::string basepath = "/home/chris/projects/Simulation Dump (Testing)/";  // This is the basic path, where I will dump all of the simulations that I run
+    std::string basepath = "/home/chris/projects/difgrow_mc_sims/";  // This is the basic path, where I will dump all of the simulations that I run
     std::string Year = to_string(1900 + ltm->tm_year);
     std::string Month = to_string(1 + ltm->tm_mon);
     if (Month.length() == 1) {
@@ -46,16 +46,16 @@ int main()
 
 
     // Start loop over h values
-//    list<unsigned short> hList {10, 12, 14, 16, 18, 20};
+    list<unsigned short> hList {10, 12, 14, 16, 18, 20};
 
-//    for (auto hL = hList.begin(); hL != hList.end(); ++hL) {
-//        unsigned short h = *hL;
+    for (auto hL = hList.begin(); hL != hList.end(); ++hL) {
+        unsigned short h = *hL;
 
         // Start loop for each specific stepsPerGrowth
-//        list<unsigned long long> numSteps {uint64_t(1e7), uint64_t(5e7)};
+        list<unsigned short> slopes {1, 2, 5, 10};
 
-//        for (auto sPG = numSteps.begin(); sPG != numSteps.end(); ++sPG) {
-//            unsigned long long stepsPerGrowth = *sPG;
+        for (auto slps = slopes.begin(); slps != slopes.end(); ++slps) {
+            unsigned short slopeRatio = *slps;
 
             // Create New Folder for this specific simulation 
             // NOTE:: This is really ugly, there's got to be a better way to do this with boost::filesystem::directory_iterator
@@ -89,14 +89,14 @@ int main()
             // Ask for experimental parameters
             short unsigned int r = 1;
             short unsigned int c = 1;
-            short unsigned int h = 15;
+//            short unsigned int h = 15;
 
             short unsigned int r0 = r;  //Initial Condtions (to export)
             short unsigned int c0 = c;
 
-            unsigned long long int stepsPerGrowth = 1e7;
-            unsigned long long int totalSteps = stepsPerGrowth * 100;
-            unsigned long long int imgPerSim = totalSteps / 100;
+            unsigned long long int stepsPerGrowth = 2e7;
+            unsigned long long int totalSteps = stepsPerGrowth * 200;
+            unsigned long long int imgPerSim = totalSteps / 1000;
 
 
             // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -121,24 +121,30 @@ int main()
 
             //Create Initial Arrays. Note: Doing basics now, can change the initialization later.
             ZArray zebra(r, c); // The main array where it stores the values of the chromatophores
+            zebra.ratio = slopeRatio;
             zebra.BlankArray();
 
             Irid ir(r, c); // Iridophore array, for guiding the patterns
+            ir.ratio = slopeRatio;
             ir.Blank();
 
             Neighbor up(r, c); // A neighbor matrix to pull array values from
+            up.ratio = slopeRatio;
             up.udshift = -1;
             up.GenerateZFBC();
 
             Neighbor down(r, c);
+            down.ratio = slopeRatio;
             down.udshift = 1;
             down.GenerateZFBC();
 
             Neighbor left(r, c);
+            left.ratio = slopeRatio;
             left.lrshift = -1;
             left.GenerateZFBC();
 
             Neighbor right(r, c);
+            right.ratio = slopeRatio;
             right.lrshift = 1;
             right.GenerateZFBC();
 
@@ -164,14 +170,12 @@ int main()
                             float cosangle = cos(angle);
                             float sinangle = sin(angle);
                             short int inew = rint(sinangle * h + i);
-//                            if ((inew < r) && (inew >= 0)) {  // This nested if run checks to see if it falls within the experimental domain
                             short int jnew = rint(cosangle * h + j);
                             if (zebra.checkExist(inew, jnew)) {
                                 if (zebra.array[inew][jnew] == 1) {
                                     zebra.array[i][j] = 2;  // Creates melanophore
                                 }
                             }
-//                            }
                         }
                     }
 
@@ -307,22 +311,13 @@ int main()
 
                 // Perform Growth
                 if (iter % (stepsPerGrowth / 2) == 0) {
-                    zebra.growTrap(false,false);
-                    ir.growTrap(true, true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
-                    up.growTrap(false,false);
-                    down.growTrap(false,false);
-                    left.growTrap(false,false);
-                    right.growTrap(false,false);
+                    zebra.growthSwitcher(false,false);
+                    ir.growthSwitcher(true, true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
+                    up.growthSwitcher(false,false);
+                    down.growthSwitcher(false,false);
+                    left.growthSwitcher(false,false);
+                    right.growthSwitcher(false,false);
                 }
-
-//                if (iter % (2*stepsPerGrowth) == 0) {
-//                    zebra.grow2Rows(false);
-//                    ir.grow2Rows(true);
-//                    up.grow2Rows(false);
-//                    down.grow2Rows(false);
-//                    left.grow2Rows(false);
-//                    right.grow2Rows(false);
-//                }
             }
 
             // Check if there are iridophores
@@ -339,13 +334,13 @@ int main()
             csvfile.open(csvCondTitle);
 
             csvfile << "Initial_Rows" << "," << "Initial_Columns" << "," << "h" << "," ; 
-            csvfile << "Total_Steps" << "," << "Steps_per_Growth_Cols" << "," << "Steps_per_Growth_Rows"<< "," << "Images_per_Growth" << "," ;
+            csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Slope_Ratio"<< "," << "Images_Per_Sim" << "," ;
             csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
             csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
             csvfile << "sm" << "," << "sx" << "," << "lx" << "Boundary Conditions" << endl;
 
             csvfile << to_string(r0) << "," << to_string(c0) << "," << to_string(h) << ",";
-            csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(stepsPerGrowth*2)<< "," << to_string(imgPerSim)<< "," ;
+            csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(slopeRatio)<< "," << to_string(1000)<< "," ;
             csvfile << to_string(r) << "," << to_string(c) << "," << iridAns << "," ;
             csvfile << to_string(bx) << "," << to_string(bm) << "," << to_string(dx) << "," << to_string(dm) << "," ;
             csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << "Zero Flux" << endl;
@@ -354,11 +349,11 @@ int main()
 
 
 
-            std::cout << "Completed Simulation with stepsPerGrowth = " << to_string(stepsPerGrowth) << endl;
+            std::cout << "Completed Simulation with slope ratio = " << to_string(slopeRatio) << endl;
         }
 
-//        std::cout << "Completed Simulations with h = " << to_string(h) << endl;
-//    }
+        std::cout << "Completed Simulations with h = " << to_string(h) << endl;
+    }
 
-//   std::cout << "Completed All Simulations in Double Loop" << endl;
-//}
+   std::cout << "Completed All Simulations in Double Loop" << endl;
+}
