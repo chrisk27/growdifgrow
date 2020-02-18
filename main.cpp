@@ -87,7 +87,7 @@ int main()
             }
 
             // Ask for experimental parameters
-            short unsigned int r = 1;
+            short unsigned int r = 50;
             short unsigned int c = 1;
 //            short unsigned int h = 15;
 
@@ -310,7 +310,7 @@ int main()
                 }
 
                 // Perform Growth
-                if (iter % (stepsPerGrowth / 2) == 0) {
+                if (iter % stepsPerGrowth == 0) {
                     zebra.growthSwitcher(false,false);
                     ir.growthSwitcher(true, true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
                     up.growthSwitcher(false,false);

@@ -210,3 +210,15 @@ void Neighbor::growTrap(bool vertextend, bool horizextend) {
         cout << "Error in row indexing" << endl;
     }
 }
+
+// Switch between two different types of growth
+void Neighbor::growthSwitcher(bool vertextend, bool horizextend) {
+    growthCounter = growthCounter + 1;
+
+    if (growthCounter != ratio) {
+        grow1ColFront(false);
+    } else {
+        growTrap(false, false);
+        growthCounter = 0;
+    }
+}

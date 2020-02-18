@@ -26,6 +26,8 @@ public:
     void grow2Cols(bool horizextend);
     void growTrap(bool vertextend, bool horizextend);
 
+    void growthSwitcher(bool vertextend, bool horizextend);
+
     // Shifts
     short lrshift {0};
     short udshift {0};
