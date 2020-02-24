@@ -1,5 +1,6 @@
 #include <math.h>
 #include <array>
+#include <deque>
 #include <iostream>
 #include "Neighbor.h"
 
@@ -20,16 +21,16 @@ void Neighbor::Generate() {
     for (short int i=0; i < rows; ++i){
         for (short int j=0; j < cols; ++j){
             if ((lrshift != 0) && (udshift == 0)) {
-                if (i + lrshift < 0) {
-                    array[i][j] = rows + i + lrshift;    
+                if (j + lrshift < 0) {
+                    array[i][j] = cols + j + lrshift;    
                 } else {
-                    array[i][j] = (i + lrshift) % rows;
+                    array[i][j] = (j + lrshift) % cols;
                 }                              
             } else if ((lrshift == 0) && (udshift != 0)) {
-                if (j + udshift < 0) {
-                    array[i][j] = cols + j + udshift;
+                if (i + udshift < 0) {
+                    array[i][j] = rows + i + udshift;
                 } else {
-                    array[i][j] = (j + udshift) % cols;
+                    array[i][j] = (i + udshift) % rows;
                 }
             } else if ((lrshift == 0) && (udshift == 0)) {
                 cout << "Need to define a shift for Neighbors" << endl;
@@ -60,7 +61,7 @@ void Neighbor::grow1D(bool extend) {
 void Neighbor::grow2DBasic(bool vertextend, bool horizextend) {
 
     //Add a new row
-    vector<unsigned short> newRow;
+    deque<unsigned short> newRow;
     for (unsigned short k = 0; k < cols; ++k) {
         newRow.push_back(0);
     }

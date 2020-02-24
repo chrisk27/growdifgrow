@@ -2,7 +2,7 @@
 #define __GROWARRAY_H_INCLUDED__
 
 #include<string>
-#include<vector>
+#include<deque>
 
 class GrowArray{
 
@@ -18,7 +18,7 @@ public:
     void grow2DBasic(bool vertextend = false, bool horizextend = false);
 
     //Vector (for Dynamic Allocation)
-    std::vector<std::vector<unsigned short> > array;
+    std::deque<std::deque<unsigned short> > array;
     unsigned short int getCols();
     unsigned short int getRows();
     
