@@ -15,6 +15,7 @@
 #include "include/ZArray.h"
 #include "include/Irid.h"
 #include "include/Neighbor.h"
+#include "include/HitTracker.h"
 
 using namespace std;
 
@@ -138,6 +139,8 @@ int main()
             Neighbor right(r, c);
             right.lrshift = 1;
             right.Generate();
+
+            HitTracker hitCnt;
 
 
             //Run Simulation by looping through each event. 
@@ -291,7 +294,7 @@ int main()
                     std::cout << "Error: Incorrect number generated" << endl;
                 }
 
-                // Export image
+                // Export image and put stuff in hit counter
                 if (iter % imgPerSim == 0) {
                     string iter_num = to_string(iter / imgPerSim);
                     if (iter_num.length() == 1){
@@ -307,7 +310,8 @@ int main()
                     string outname = saveSim + "/img_" + iter_num + ".csv";
                     zebra.export2csv(outname);
 
-                    std::cout << "Current Hit Counter = " << to_string(hitCounter) << " out of " << to_string(iter) << endl;
+                    hitCnt.hitCounts.push_back(hitCounter);
+                    hitCnt.iterValues.push_back(iter);
                 }
 
                 // Perform Growth
@@ -350,6 +354,10 @@ int main()
 
             csvfile.close();
 
+            // Export hit table to csv
+            std::string hitName = saveSim + "/hitNums.csv";
+            hitCnt.export2csv(hitName);
+
             repeatCounter = repeatCounter + 1;
 
             std::cout << "Completed Simulation: stepsPerGrowth = " << to_string(stepsPerGrowth) << ", counter = " << to_string(repeatCounter) << endl;
@@ -357,7 +365,7 @@ int main()
         }
 
             std::cout << "Completed all simulations where stepsPerGrowth = " << to_string(stepsPerGrowth) << endl;
-            
+
     }
 
     std::cout << "Completed All Simulations in Loop" << endl;
