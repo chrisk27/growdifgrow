@@ -1,7 +1,7 @@
 #include <math.h>
 #include <fstream>
 #include <cstring>
-#include <vector>
+#include <deque>
 
 #include "GrowArray.h"
 
@@ -11,7 +11,7 @@ using namespace std;
 GrowArray::GrowArray() : rows(0), cols(0) {};
 
 GrowArray::GrowArray(int i) : rows(i), cols(i) {  //with one argument, makes square
-    vector<unsigned short> blankRow;
+    deque<unsigned short> blankRow;
     for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row vector
         blankRow.push_back(0);
     }
@@ -21,7 +21,7 @@ GrowArray::GrowArray(int i) : rows(i), cols(i) {  //with one argument, makes squ
 }
 
 GrowArray::GrowArray(int i, int j) : rows(i), cols(j) {
-    vector<unsigned short> blankRow;
+    deque<unsigned short> blankRow;
     for (unsigned short k = 0; k < cols; ++k){  //Constructs blank row vector
         blankRow.push_back(0);
     }

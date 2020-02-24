@@ -4,6 +4,7 @@
 #include <list>
 #include <array>
 #include <ctime>
+#include <time.h>
 #include <random>
 #include <string>
 #include <fstream>
@@ -45,15 +46,15 @@ int main()
 
 
     // Define lists you're going to loop over
-    list<unsigned short> hlist {10, 12, 14, 15, 16, 18, 20};
-    list<float> lxlist {1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5};
+    list<unsigned short> hlist {10, 12, 14, 16, 18, 20};
+    list<unsigned long long> numlist {uint64_t(8e6), uint64_t(1e7), uint64_t(5e7), uint64_t(1e8)};
 
 
     for (auto hPt = hlist.begin(); hPt != hlist.end(); ++hPt) {
         unsigned short h = *hPt;
 
-        for (auto lxPt = lxlist.begin(); lxPt != lxlist.end(); ++lxPt) {
-            float lx = *lxPt;
+        for (auto sPG = numlist.begin(); sPG != numlist.end(); ++sPG) {
+            unsigned long long stepsPerGrowth = *sPG;
             // Create New Folder for this specific simulation 
             // NOTE:: This is really ugly, there's got to be a better way to do this with boost::filesystem::directory_iterator
             bool foundFile = true;
@@ -91,9 +92,9 @@ int main()
             short unsigned int r0 = r;  //Initial Condtions (to export)
             short unsigned int c0 = c;
 
-            unsigned long long int totalSteps = 1e9;
-            unsigned long long int stepsPerGrowth = 1e7;
-            unsigned long long int imgPerSim = 1e6;
+            unsigned long long int totalSteps = stepsPerGrowth * 300;
+//            unsigned long long int stepsPerGrowth = 1e7;
+            unsigned long long int imgPerSim = totalSteps / 1000;
 
 
             // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -104,7 +105,7 @@ int main()
             float dm = 0; //natural death of melanophores
             float sm = 1; //killing of xanthophores by melanophores
             float sx = 1; //killing of melanophores by xanthophores
-            //float lx = 2.5; //promotion of melanophore birth by long-range xanthophores
+            float lx = 2.5; //promotion of melanophore birth by long-range xanthophores
             
             //probabilities
             float rate_sum = bx + bm + dx + dm + sm + sx + lx;
@@ -161,7 +162,7 @@ int main()
                         float cosangle = cos(angle);
                         float sinangle = sin(angle);
 
-                        short int inew = rint(cosangle * h + i);
+                        short int inew = rint(sinangle * h + i);
                         if (inew > r - 1){
                             inew = inew % r;    
                         } else if (inew < 0) {
@@ -170,7 +171,7 @@ int main()
                             }
                         }
 
-                        short int jnew = rint(sinangle * h + j);
+                        short int jnew = rint(cosangle * h + j);
                         if (jnew > c -1){
                             jnew = jnew % c;
                         } else if (jnew < 0) {
@@ -188,25 +189,25 @@ int main()
                     if (zebra.array[i][j] == 1) {
                         switch(rand() % 4) {
                             case 0: { //Above Neighbor
-                                if (zebra.array[i][up.array[i][j]] == 2) {
+                                if (zebra.array[up.array[i][j]][j] == 2) {
                                     zebra.array[i][j] = 0;
                                 }
                                 break;
                             }
                             case 1: { //Below Neighbor
-                                if (zebra.array[i][down.array[i][j]] == 2) {
+                                if (zebra.array[down.array[i][j]][j] == 2) {
                                     zebra.array[i][j] = 0;
                                 }
                                 break;
                             }
                             case 2: { //Left Neighbor
-                                if (zebra.array[left.array[i][j]][j] == 2) {
+                                if (zebra.array[i][left.array[i][j]] == 2) {
                                     zebra.array[i][j] = 0;
                                 }
                                 break;
                             }
                             case 3: { //Right Neighbor
-                                if (zebra.array[right.array[i][j]][j] == 2) {
+                                if (zebra.array[i][right.array[i][j]] == 2) {
                                     zebra.array[i][j] = 0;  
                                 }
                                 break;
@@ -222,25 +223,25 @@ int main()
                     if (zebra.array[i][j] == 2) {
                         switch(rand() % 4) {
                             case 0: { //Above Neighbor
-                                if (zebra.array[i][up.array[i][j]] == 1) {
+                                if (zebra.array[up.array[i][j]][j] == 1) {
                                     zebra.array[i][j] = 0;
                                 }
                                 break;
                             }
                             case 1: { //Below Neighbor
-                                if (zebra.array[i][down.array[i][j]] == 1) {
+                                if (zebra.array[down.array[i][j]][j] == 1) {
                                     zebra.array[i][j] = 0;
                                 }
                                 break;
                             }
                             case 2: { //Left Neighbor
-                                if (zebra.array[left.array[i][j]][j] == 1) {
+                                if (zebra.array[i][left.array[i][j]] == 1) {
                                     zebra.array[i][j] = 0;
                                 }
                                 break;
                             }
                             case 3: { //Right Neighbor
-                                if (zebra.array[right.array[i][j]][j] == 1) {
+                                if (zebra.array[i][right.array[i][j]] == 1) {
                                     zebra.array[i][j] = 0;  
                                 }
                                 break;
@@ -298,7 +299,7 @@ int main()
                 }
 
                 // Perform Growth
-                if (iter % stepsPerGrowth == 0) {
+                if ((iter % stepsPerGrowth == 0) && (iter <= stepsPerGrowth * 200)) {
                     zebra.grow1D(false);
                     ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
                     up.grow1D(false);
@@ -322,7 +323,7 @@ int main()
             csvfile.open(csvCondTitle);
 
             csvfile << "Initial_Rows" << "," << "Initial_Columns" << "," << "h" << "," ; 
-            csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Images_per_Growth" << "," ;
+            csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Images" << "," ;
             csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
             csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
             csvfile << "sm" << "," << "sx" << "," << "lx" << endl;
@@ -337,7 +338,7 @@ int main()
 
 
 
-            std::cout << "Completed Simulation: lx = " << to_string(lx) << ", h = " << to_string(h) << endl;
+            std::cout << "Completed Simulation: stepsPerGrowth = " << to_string(lx) << ", h = " << to_string(h) << endl;
 
         }
 
