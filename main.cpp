@@ -8,6 +8,7 @@
 #include <random>
 #include <string>
 #include <fstream>
+#include <limits.h>
 
 #include<boost/filesystem.hpp>
 
@@ -46,15 +47,20 @@ int main()
     }
 
 
-    // Start loop for each specific stepsPerGrowth
-    list<unsigned long long> numSteps {uint64_t(5e6), uint64_t(1e7), uint64_t(5e7)};
+    // Start loop over h values
+    unsigned short repeatCounter = 0;
+    unsigned short numRepeats = 1;
+    list<unsigned short> hList {10, 12, 14, 16, 18, 20};
 
-    for (auto sPG = numSteps.begin(); sPG != numSteps.end(); ++sPG) {
-        unsigned long long stepsPerGrowth = *sPG;
+    for (auto hL = hList.begin(); hL != hList.end(); ++hL) {
+        unsigned short h = *hL;
 
-        unsigned short repeatCounter = 0;
-        unsigned short numRepeats = 5;
-        while (repeatCounter < numRepeats) {
+        // Start loop for each specific stepsPerGrowth
+        list<unsigned short> slopes {1, 2, 5, 10};
+
+        for (auto slps = slopes.begin(); slps != slopes.end(); ++slps) {
+            unsigned short slopeRatio = *slps;
+
             // Create New Folder for this specific simulation 
             // NOTE:: This is really ugly, there's got to be a better way to do this with boost::filesystem::directory_iterator
             bool foundFile = true;
@@ -85,15 +91,15 @@ int main()
             }
 
             // Ask for experimental parameters
-            short unsigned int r = 200;
+            short unsigned int r = 50;
             short unsigned int c = 1;
-            short unsigned int h = 12;
+//            short unsigned int h = 15;
 
             short unsigned int r0 = r;  //Initial Condtions (to export)
             short unsigned int c0 = c;
 
-            unsigned long long int totalSteps = 200 * stepsPerGrowth;
-            //unsigned long long int stepsPerGrowth = 2e7;
+            unsigned long long int stepsPerGrowth = 2e7;
+            unsigned long long int totalSteps = stepsPerGrowth * 200;
             unsigned long long int imgPerSim = totalSteps / 1000;
 
 
@@ -119,24 +125,30 @@ int main()
 
             //Create Initial Arrays. Note: Doing basics now, can change the initialization later.
             ZArray zebra(r, c); // The main array where it stores the values of the chromatophores
+            zebra.ratio = slopeRatio;
             zebra.BlankArray();
 
             Irid ir(r, c); // Iridophore array, for guiding the patterns
+            ir.ratio = slopeRatio;
             ir.Blank();
 
             Neighbor up(r, c); // A neighbor matrix to pull array values from
+            up.ratio = slopeRatio;
             up.udshift = -1;
             up.Generate();
 
             Neighbor down(r, c);
+            down.ratio = slopeRatio;
             down.udshift = 1;
             down.Generate();
 
             Neighbor left(r, c);
+            left.ratio = slopeRatio;
             left.lrshift = -1;
             left.Generate();
 
             Neighbor right(r, c);
+            right.ratio = slopeRatio;
             right.lrshift = 1;
             right.Generate();
 
@@ -156,145 +168,149 @@ int main()
                 short int i = rand() % r; // Chooses random lattice point
                 short int j = rand() % c;
                 
-                if (proc < lx_p) { //Tests to see if melanophore will form due to long-range effect
-                    if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
-                        float angle = dis(generator) * 2 * M_PI;
-                        float cosangle = cos(angle);
-                        float sinangle = sin(angle);
-
-                        short int inew = rint(sinangle * h + i);
-                        if (inew > r - 1){
-                            inew = inew % r;    
-                        } else if (inew < 0) {
-                            while (inew < 0) {
-                                inew = inew + r;
+                if (zebra.checkExist(i, j) == true) {
+                    if (proc < lx_p) { //Tests to see if melanophore will form due to long-range effect
+                        if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
+                            float angle = dis(generator) * 2 * M_PI;
+                            float cosangle = cos(angle);
+                            float sinangle = sin(angle);
+                            short int inew = rint(sinangle * h + i);
+                            short int jnew = rint(cosangle * h + j);
+                            if (zebra.checkExist(inew, jnew)) {
+                                if (zebra.array[inew][jnew] == 1) {
+                                    zebra.array[i][j] = 2;  // Creates melanophore
+                                    hitCounter = hitCounter + 1;
+                                }
                             }
                         }
+                    }
 
-                        short int jnew = rint(cosangle * h + j);
-                        if (jnew > c -1){
-                            jnew = jnew % c;
-                        } else if (jnew < 0) {
-                            while (jnew < 0) {
-                                jnew = jnew + c;
+                    else if ((proc < lx_p + sm_p) && (proc >= lx_p)) { //Tests to see if local melanophore will kill xanthophore
+                        if (zebra.array[i][j] == 1) {
+                            switch(rand() % 4) {
+                                case 0: { //Above Neighbor
+                                    if ((up.array[i][j] != SHRT_MAX) && (up.checkExist(i, j) == true)) {
+                                        if (zebra.array[up.array[i][j]][j] == 2) {
+                                            zebra.array[i][j] = 0;
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                case 1: { //Below Neighbor
+                                    if ((down.array[i][j] != SHRT_MAX) && (down.checkExist(i, j) == true)) {
+                                        if (zebra.array[down.array[i][j]][j] == 2) {
+                                            zebra.array[i][j] = 0;
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;    
+                                    }
+                                }
+                                case 2: { //Left Neighbor
+                                    if ((left.array[i][j] != SHRT_MAX) && (left.checkExist(i, j) == true)) {
+                                        if (zebra.array[i][left.array[i][j]] == 2) {
+                                            zebra.array[i][j] = 0;
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                case 3: { //Right Neighbor
+                                    if ((right.array[i][j] != SHRT_MAX) && (right.checkExist(i, j) == true)) {
+                                        if (zebra.array[i][right.array[i][j]] == 2) {
+                                            zebra.array[i][j] = 0;  
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                default: {
+                                    break;
+                                }
                             }
                         }
-                        if (zebra.array[inew][jnew] == 1) {
+                    } 
+
+                    else if ((proc < lx_p + sm_p + sx_p) && (proc >= lx_p + sm_p)) { //Tests to see if local xanthophore will kill melanophore
+                        if (zebra.array[i][j] == 2) {
+                            switch(rand() % 4) {
+                                case 0: { //Above Neighbor
+                                    if ((up.array[i][j] != SHRT_MAX) && (up.checkExist(i, j) == true)) {
+                                        if (zebra.array[up.array[i][j]][j] == 1) {
+                                            zebra.array[i][j] = 0;
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                case 1: { //Below Neighbor
+                                    if ((down.array[i][j] != SHRT_MAX) && (down.checkExist(i, j) == true)) {
+                                        if (zebra.array[down.array[i][j]][j] == 1) {
+                                            zebra.array[i][j] = 0;
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;    
+                                    }
+                                }
+                                case 2: { //Left Neighbor
+                                    if ((left.array[i][j] != SHRT_MAX) && (left.checkExist(i, j) == true)) {
+                                        if (zebra.array[i][left.array[i][j]] == 1) {
+                                            zebra.array[i][j] = 0;
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                case 3: { //Right Neighbor
+                                    if ((right.array[i][j] != SHRT_MAX) && (right.checkExist(i, j) == true)) {
+                                        if (zebra.array[i][right.array[i][j]] == 1) {
+                                            zebra.array[i][j] = 0;  
+                                            hitCounter = hitCounter + 1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                default: {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    else if ((proc < lx_p + sm_p + sx_p + bx_p) && (proc >= lx_p + sm_p + sx_p)) { //Tests for birth of xanthophore
+                        if (zebra.array[i][j] == 0) {
+                            zebra.array[i][j] = 1;
+                            hitCounter = hitCounter + 1;
+                        }
+                    }
+
+                    else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p) && (proc >= lx_p + sm_p + sx_p + bx_p)) { //Tests for birth of melanophore
+                        if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
                             zebra.array[i][j] = 2;
                             hitCounter = hitCounter + 1;
                         }
                     }
-                }
 
-                else if ((proc < lx_p + sm_p) && (proc >= lx_p)) { //Tests to see if local melanophore will kill xanthophore
-                    if (zebra.array[i][j] == 1) {
-                        switch(rand() % 4) {
-                            case 0: { //Above Neighbor
-                                if (zebra.array[up.array[i][j]][j] == 2) {
-                                    zebra.array[i][j] = 0;
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            case 1: { //Below Neighbor
-                                if (zebra.array[down.array[i][j]][j] == 2) {
-                                    zebra.array[i][j] = 0;
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            case 2: { //Left Neighbor
-                                if (zebra.array[i][left.array[i][j]] == 2) {
-                                    zebra.array[i][j] = 0;
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            case 3: { //Right Neighbor
-                                if (zebra.array[i][right.array[i][j]] == 2) {
-                                    zebra.array[i][j] = 0; 
-                                    hitCounter = hitCounter + 1; 
-                                }
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
+                    else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p)) { //Tests for death of xanthophore
+                        if (zebra.array[i][j] == 1) {
+                            zebra.array[i][j] = 0;
+                            hitCounter = hitCounter + 1;
                         }
                     }
-                } 
 
-                else if ((proc < lx_p + sm_p + sx_p) && (proc >= lx_p + sm_p)) { //Tests to see if local xanthophore will kill melanophore
-                    if (zebra.array[i][j] == 2) {
-                        switch(rand() % 4) {
-                            case 0: { //Above Neighbor
-                                if (zebra.array[up.array[i][j]][j] == 1) {
-                                    zebra.array[i][j] = 0;
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            case 1: { //Below Neighbor
-                                if (zebra.array[down.array[i][j]][j] == 1) {
-                                    zebra.array[i][j] = 0;
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            case 2: { //Left Neighbor
-                                if (zebra.array[i][left.array[i][j]] == 1) {
-                                    zebra.array[i][j] = 0;
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            case 3: { //Right Neighbor
-                                if (zebra.array[i][right.array[i][j]] == 1) {
-                                    zebra.array[i][j] = 0;  
-                                    hitCounter = hitCounter + 1;
-                                }
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
+                    else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p + dm_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p + dx_p)) { //Tests for death of melanophore
+                        if (zebra.array[i][j] == 2) {
+                            zebra.array[i][j] = 0;
+                            hitCounter = hitCounter + 1;
                         }
                     }
-                }
 
-                else if ((proc < lx_p + sm_p + sx_p + bx_p) && (proc >= lx_p + sm_p + sx_p)) { //Tests for birth of xanthophore
-                    if (zebra.array[i][j] == 0) {
-                        zebra.array[i][j] = 1;
-                        hitCounter = hitCounter + 1;
+                    else {
+                        std::cout << "Error: Incorrect number generated" << endl;
                     }
                 }
 
-                else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p) && (proc >= lx_p + sm_p + sx_p + bx_p)) { //Tests for birth of melanophore
-                    if ((zebra.array[i][j] == 0) && (ir.array[i][j] == 0)) {
-                        zebra.array[i][j] = 2;
-                        hitCounter = hitCounter + 1;
-                    }
-                }
-
-                else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p)) { //Tests for death of xanthophore
-                    if (zebra.array[i][j] == 1) {
-                        zebra.array[i][j] = 0;
-                        hitCounter = hitCounter + 1;
-                    }
-                }
-
-                else if ((proc < lx_p + sm_p + sx_p + bx_p + bm_p + dx_p + dm_p) && (proc >= lx_p + sm_p + sx_p + bx_p + bm_p + dx_p)) { //Tests for death of melanophore
-                    if (zebra.array[i][j] == 2) {
-                        zebra.array[i][j] = 0;
-                        hitCounter = hitCounter + 1;
-                    }
-                }
-
-                else {
-                    std::cout << "Error: Incorrect number generated" << endl;
-                }
-
-                // Export image and put stuff in hit counter
+                // Export image
                 if (iter % imgPerSim == 0) {
                     string iter_num = to_string(iter / imgPerSim);
                     if (iter_num.length() == 1){
@@ -308,20 +324,20 @@ int main()
                     }
 
                     string outname = saveSim + "/img_" + iter_num + ".csv";
-                    zebra.export2csv(outname);
+                    zebra.Rectangular_Export(outname);
 
                     hitCnt.hitCounts.push_back(hitCounter);
                     hitCnt.iterValues.push_back(iter);
                 }
 
                 // Perform Growth
-                if ((iter % stepsPerGrowth == 0) && (iter <= stepsPerGrowth * 200)) {
-                    zebra.grow1D(false);
-                    ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
-                    up.grow1D(false);
-                    down.grow1D(false);
-                    left.grow1D(false);
-                    right.grow1D(false);
+                if (iter % stepsPerGrowth == 0) {
+                    zebra.growthSwitcher(false,false);
+                    ir.growthSwitcher(true, true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
+                    up.growthSwitcher(false,false);
+                    down.growthSwitcher(false,false);
+                    left.growthSwitcher(false,false);
+                    right.growthSwitcher(false,false);
                 }
             }
 
@@ -339,18 +355,18 @@ int main()
             csvfile.open(csvCondTitle);
 
             csvfile << "Initial_Rows" << "," << "Initial_Columns" << "," << "h" << "," ; 
-            csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Images" << "," ;
+            csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Slope_Ratio"<< "," << "Images" << "," ;
             csvfile << "Repeat Number" << "," << "Total_Repeats" << "," << "Num_Hits" << "," ;
             csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
             csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
-            csvfile << "sm" << "," << "sx" << "," << "lx" << endl;
+            csvfile << "sm" << "," << "sx" << "," << "lx" << "," << "Boundary Conditions" << endl;
 
             csvfile << to_string(r0) << "," << to_string(c0) << "," << to_string(h) << ",";
-            csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(imgPerSim)<< "," ;
+            csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(slopeRatio) << "," << to_string(imgPerSim)<< "," ;
             csvfile << to_string(repeatCounter + 1) << "," << to_string(numRepeats) << "," << to_string(hitCounter) << ",";
             csvfile << to_string(r) << "," << to_string(c) << "," << iridAns << "," ;
             csvfile << to_string(bx) << "," << to_string(bm) << "," << to_string(dx) << "," << to_string(dm) << "," ;
-            csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << endl;
+            csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << ","<< "Periodic" << endl;
 
             csvfile.close();
 
@@ -360,13 +376,11 @@ int main()
 
             repeatCounter = repeatCounter + 1;
 
-            std::cout << "Completed Simulation: stepsPerGrowth = " << to_string(stepsPerGrowth) << ", counter = " << to_string(repeatCounter) << endl;
-
+            std::cout << "Completed Simulation with slope ratio = " << to_string(slopeRatio) << endl;
         }
 
-            std::cout << "Completed all simulations where stepsPerGrowth = " << to_string(stepsPerGrowth) << endl;
-
+        std::cout << "Completed Simulations with h = " << to_string(h) << endl;
     }
 
-    std::cout << "Completed All Simulations in Loop" << endl;
+   std::cout << "Completed All Simulations in Double Loop" << endl;
 }

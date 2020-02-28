@@ -1,5 +1,7 @@
 #include <math.h>
 #include <array>
+#include <ctime>
+#include <random>
 #include <fstream>
 #include <cstring>
 #include "ZArray.h"
@@ -23,6 +25,31 @@ void ZArray::BlankArray() {
             array[i][j] = 0;
         }
     }
+}
+
+void ZArray::MelanoBand(unsigned short bandwidth, float randomXan) {
+    // First, create a bunch of random xanthophores all over the domain
+    mt19937 generator ((int) time(0));
+    uniform_real_distribution<float> dis(0.0, 1.0);
+    for (int i=0; i < rows; i++) {
+        for (int j=0; j < cols; j++) {
+            float randnum = dis(generator);
+            if (randnum < randomXan) {
+                array[i][j] = 1;
+            } else {
+                array[i][j] = 0;
+            }
+        }
+    }
+    // Next, add the middle band of melanophores
+    if (bandwidth > 0) {
+        for (int i = ((rows - bandwidth) / 2); i < ((rows + bandwidth) / 2); ++i) {
+            for (int j=0; j < cols; ++j) {
+                array[i][j] = 2;
+            }
+        }
+    }
+
 }
 
 void ZArray::RandomArray() {
