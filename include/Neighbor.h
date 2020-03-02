@@ -13,12 +13,15 @@ public:
     ~Neighbor();
 
     // Generators
-    void Generate();
+    void pickGenerator();
+    void GeneratePeriodic();
+    void Generate_Old();
     void GenerateZFBC();
     void GenerateZFBC_Old();
+    std::string boundaryCondition;
 
     // Growth - Need to override from parent class since we use these differently
-    void grow1D(bool extend);
+    void grow1D(bool extend);  // Should be the same essentially as grow1ColBack
     void grow2DBasic(bool vertextend, bool horizextend);
     void grow2DSquare(bool vertextend, bool horizextend);
     void grow1ColBack(bool horizextend);

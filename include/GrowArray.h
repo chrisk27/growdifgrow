@@ -14,7 +14,7 @@ public:
     ~GrowArray();
 
     //Growth Functions-blank cells
-    void grow1D(bool extend = false);
+    void grow1D(bool extend = false);  // Should be the same essentially as grow1ColBack
     void grow2DBasic(bool vertextend = false, bool horizextend = false);
     void grow2DSquare(bool vertextend = false, bool horizextend = false);
     void grow1ColBack(bool horizextend = false);
@@ -43,5 +43,6 @@ protected:
     unsigned short int cols {0};
     
 };
+
 
 #endif

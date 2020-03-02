@@ -18,9 +18,56 @@ Neighbor::Neighbor(int i, int j) : GrowArray(i, j) {};
 Neighbor::~Neighbor() {};
 
 // Generator
-void Neighbor::Generate() {
+void Neighbor::GeneratePeriodic() {
+    // If it's a left or right shift
+    if ((lrshift != 0) && (udshift == 0)) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < array[i].size(); ++j) {
+                if (j + lrshift < 0) {
+                    array[i][j] = array[i].size() + j + lrshift;
+                } else {
+                    array[i][j] = (j + lrshift) % array[i].size();
+                }
+            }
+        }
+    }
+    else if ((lrshift == 0) && (udshift != 0)) {  // Note: For right now, I'm not sure if this works with anything but a +/- 1 for udshift
+    // Also note: in its current form, a column with only one element will become its own neighbor. Not sure if I care, but worth noting
+        for (int i = 0; i < rows; ++ i) {
+            for (int j = 0; j < array[i].size(); ++j) {
+                unsigned int multiplier = 1; 
+                int idx2test = i + (udshift * multiplier);
+                if (checkExist(idx2test, j) == true) { //if it's a valid array point
+                    array[i][j] = idx2test;
+                } else {
+                    while (checkExist(idx2test, j) == false) {
+                        if (idx2test < 0) {  // circles back to bottom row of the array
+                            idx2test = rows - 1;
+                            multiplier = 1;
+                        }
+                        else if (idx2test > rows - 1) {  // circles back to 0th row of array
+                            idx2test = idx2test % rows;
+                            multiplier = 1;
+                        } else {
+                            multiplier = multiplier + 1;
+                            idx2test = idx2test + (udshift * multiplier);
+                        }
+                    }
+                    array[i][j] = idx2test;
+                }
+            }
+        }
+    }
+    else if ((lrshift == 0) && (udshift == 0)) {
+        cout << "Need to define a shift for Neighbors" << endl;
+    } else {
+        cout << "Error: Only one directional shift supported at this time" << endl;
+    }
+}
+
+void Neighbor::Generate_Old() {
     for (short int i=0; i < rows; ++i){
-        for (short int j=0; j < cols; ++j){
+        for (short int j=0; j < array[i].size(); ++j){
             if ((lrshift != 0) && (udshift == 0)) {
                 if (j + lrshift < 0) {
                     array[i][j] = cols + j + lrshift;    
@@ -99,6 +146,18 @@ void Neighbor::GenerateZFBC() {
     }
 }
 
+void Neighbor::pickGenerator(){
+    if (boundaryCondition == "Periodic") {
+        GeneratePeriodic();
+    }
+    else if (boundaryCondition == "ZeroFlux") {
+        GenerateZFBC();
+    }
+    else {
+        cout << "Error in Boundary Condition Choice" << endl;
+    }
+}
+
 //Growth functions  //Note: extend shouldn't do anything, just there as placeholder to match form of parent function (necessary to override)
 void Neighbor::grow1D(bool extend) { 
 
@@ -113,7 +172,7 @@ void Neighbor::grow1D(bool extend) {
 //    }
     
     //Re-generate new values
-    GenerateZFBC();
+    pickGenerator();
 }
 
 void Neighbor::grow2DSquare(bool vertextend, bool horizextend) {
@@ -132,7 +191,7 @@ void Neighbor::grow2DSquare(bool vertextend, bool horizextend) {
     cols = cols + 2;
 
     // Re-generate new values
-    GenerateZFBC();
+    pickGenerator();
 
     // Error-check
     if (rows != array.size()){
@@ -149,7 +208,7 @@ void Neighbor::grow2Rows(bool vertextend) {
     array.push_back(newRow);
     rows = rows + 2;
 
-    GenerateZFBC();
+    pickGenerator();
 
     if (rows != array.size()) {
         cout << "Error in row indexing" << endl;
@@ -163,7 +222,7 @@ void Neighbor::grow2Cols(bool horizextend) {
     }
     cols = cols + 2;
 
-    GenerateZFBC();
+    pickGenerator();
 
 //    if (cols != array[0].size()) {
 //        cout << "Error in column indexing" << endl;
@@ -194,7 +253,7 @@ void Neighbor::grow2DBasic(bool vertextend, bool horizextend) {
     }
 
     // Re-generate values (for rectangular array)
-    Generate();
+    pickGenerator();
 }
 
 void Neighbor::grow1ColBack(bool horizextend) {
@@ -202,7 +261,7 @@ void Neighbor::grow1ColBack(bool horizextend) {
         array[j].push_back(0);
     }
     cols = cols + 1;
-    GenerateZFBC();
+    pickGenerator();
 
 //    if (cols != array[0].size()) {
 //        throw invalid_argument("Error in column indexing");
@@ -214,7 +273,7 @@ void Neighbor::grow1ColFront(bool horizextend) {
         array[j].push_front(0);
     }
     cols = cols + 1;
-    GenerateZFBC();
+    pickGenerator();
 }
 
 void Neighbor::growTrap(bool vertextend, bool horizextend) {
@@ -232,7 +291,7 @@ void Neighbor::growTrap(bool vertextend, bool horizextend) {
     rows = rows + 2;
     cols = cols + 1;
 
-    GenerateZFBC();
+    pickGenerator();
 
     if (rows != array.size()) {
         cout << "Error in row indexing" << endl;
