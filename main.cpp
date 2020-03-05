@@ -28,7 +28,7 @@ int main()
 
     tm *ltm = localtime(&now);
 
-    std::string basepath = "/home/chris/projects/Simulation Dump (Testing)/";  // This is the basic path, where I will dump all of the simulations that I run
+    std::string basepath = "/home/chris/projects/difgrow_mc_sims/";  // This is the basic path, where I will dump all of the simulations that I run
     std::string Year = to_string(1900 + ltm->tm_year);
     std::string Month = to_string(1 + ltm->tm_mon);
     if (Month.length() == 1) {
@@ -92,14 +92,14 @@ int main()
                 }
 
                 // Ask for experimental parameters
-                short unsigned int r = 50;
+                short unsigned int r = 1;
                 short unsigned int c = 1;
     //            short unsigned int h = 15;
 
                 short unsigned int r0 = r;  //Initial Condtions (to export)
                 short unsigned int c0 = c;
 
-                unsigned long long int stepsPerGrowth = 2e7;
+                unsigned long long int stepsPerGrowth = 5e6;
                 unsigned long long int totalSteps = stepsPerGrowth * 200;
                 unsigned long long int imgPerSim = totalSteps / 1000;
 
@@ -192,10 +192,10 @@ int main()
                                 else if (up.boundaryCondition == "Periodic") {
                                     if (zebra.checkExist(inew, jnew) == false) {
                                         // First, check and make sure indicies are in area. Rows first (?), then cols
-                                        if (inew < 0) {
+                                        while (inew < 0) {
                                             inew = zebra.getRows() + inew;
                                         } 
-                                        else if (inew >= zebra.getRows()) {
+                                        if (inew >= zebra.getRows()) {
                                             inew = inew % zebra.getRows();
                                         }
                                         unsigned numCol = zebra.array[inew].size();
