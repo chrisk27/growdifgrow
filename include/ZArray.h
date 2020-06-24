@@ -16,6 +16,9 @@ public:
     void BlankArray(); 
     void RandomArray();
     void MelanoBand(unsigned short bandwidth = 1, float randomXanProb = 0);
+
+    // Ablation Function
+    void Ablate(float widthRatio = 0.5, float heightRatio = 0.5);
     
 };
 

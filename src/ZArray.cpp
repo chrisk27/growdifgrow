@@ -73,3 +73,24 @@ void ZArray::RandomArray() {
     }
 }
 
+
+// Ablation Function
+void ZArray::Ablate(float widthRatio, float heightRatio){
+    //First, calculate the rows that will have something ablated in them
+    unsigned short rowRange = floor(heightRatio * rows);
+    unsigned short minRow = ceil(((rows - rowRange) / 2));
+    unsigned short maxRow = minRow + rowRange;
+
+    //Then, loop through each row and figure out which columns to ablate
+    for (unsigned short abRow = minRow; abRow <= maxRow; abRow++) {
+        unsigned short rowLength = array[abRow].size();
+        unsigned short colRange = floor(widthRatio * rowLength);
+        unsigned short minCol = ceil(((rowLength - colRange) / 2));
+        unsigned short maxCol = minCol + colRange;
+
+        //Now, replace each value in the array with a zero (empty spot)
+        for (unsigned short abCol = minCol; abCol <= maxCol; abCol++) {
+            array[abRow][abCol] = 0;
+        }
+    }
+}

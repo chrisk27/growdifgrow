@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <limits.h>
+#include <algorithm>
 
 #include<boost/filesystem.hpp>
 
@@ -48,13 +49,13 @@ int main()
 
 
     // Start loop over h values
-    list<unsigned short> hList {10, 12, 14, 16};
+    list<unsigned short> hList {12, 15, 20};
 
     for (auto hL = hList.begin(); hL != hList.end(); ++hL) {
         unsigned short h = *hL;
 
         // Start loop for each specific slopes
-        list<unsigned short> slopes {1, 2, 4, 6, 8};
+        list<unsigned short> slopes {2, 5, 8};
 
         for (auto slps = slopes.begin(); slps != slopes.end(); ++slps) {
             unsigned short slopeRatio = *slps;
@@ -92,16 +93,19 @@ int main()
                 }
 
                 // Ask for experimental parameters
-                short unsigned int r = 1;
+                short unsigned int r = 50;
                 short unsigned int c = 1;
     //            short unsigned int h = 15;
 
                 short unsigned int r0 = r;  //Initial Condtions (to export)
                 short unsigned int c0 = c;
 
-                unsigned long long int stepsPerGrowth = 5e6;
+                unsigned long long int stepsPerGrowth = 1e7;
                 unsigned long long int totalSteps = stepsPerGrowth * 200;
                 unsigned long long int imgPerSim = totalSteps / 1000;
+                
+                // Need to find how to choose where to ablate - make a list of spots. Note: Must only do integer math
+                list<unsigned long long int> ablateSpots {(totalSteps * 975) / 1000};
 
 
                 // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -339,7 +343,28 @@ int main()
                         }
                     }
 
-                    // Export image
+                    //Check to see if the system needs to be ablated
+                    if (find(ablateSpots.begin(), ablateSpots.end(), iter) != ablateSpots.end()) {
+                        zebra.Ablate(0.75, 0.75);
+                        string iter_num = to_string(floor(iter / imgPerSim));
+                        if (iter_num.length() == 1){
+                            iter_num = "0000" + iter_num;
+                        } else if (iter_num.length() == 2){
+                            iter_num = "000" + iter_num;
+                        } else if (iter_num.length() == 3){
+                            iter_num = "00" + iter_num;
+                        }else if (iter_num.length() == 4){
+                            iter_num = "0" + iter_num;
+                        }
+
+                        string outname = saveSim + "/img_" + iter_num + "_ablation.csv";
+                        zebra.Rectangular_Export(outname);
+
+                        hitCnt.hitCounts.push_back(hitCounter);
+                        hitCnt.iterValues.push_back(iter);
+                    }
+
+                    // Export image regularly
                     if (iter % imgPerSim == 0) {
                         string iter_num = to_string(iter / imgPerSim);
                         if (iter_num.length() == 1){
@@ -388,14 +413,21 @@ int main()
                 csvfile << "Repeat Number" << "," << "Total_Repeats" << "," << "Num_Hits" << "," ;
                 csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
                 csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
-                csvfile << "sm" << "," << "sx" << "," << "lx" << "," << "Boundary Conditions" << endl;
+                csvfile << "sm" << "," << "sx" << "," << "lx" << "," << "Boundary Conditions" << ","<< "Ablated"<< endl;
 
                 csvfile << to_string(r0) << "," << to_string(c0) << "," << to_string(h) << ",";
                 csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(slopeRatio) << "," << to_string(imgPerSim)<< "," ;
                 csvfile << to_string(repeatCounter + 1) << "," << to_string(numRepeats) << "," << to_string(hitCounter) << ",";
                 csvfile << to_string(r) << "," << to_string(c) << "," << iridAns << "," ;
                 csvfile << to_string(bx) << "," << to_string(bm) << "," << to_string(dx) << "," << to_string(dm) << "," ;
-                csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << ","<< "Periodic" << endl;
+                csvfile << to_string(sm) << "," << to_string(sx) << "," << to_string(lx) << ","<< "Periodic" <<",";
+                
+                for (auto const &v : ablateSpots) {
+                    csvfile << to_string(v)<< ";";
+                }
+                
+                csvfile << endl;
+                
 
                 csvfile.close();
 
