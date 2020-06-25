@@ -346,7 +346,8 @@ int main()
                     //Check to see if the system needs to be ablated
                     if (find(ablateSpots.begin(), ablateSpots.end(), iter) != ablateSpots.end()) {
                         zebra.Ablate(0.75, 0.75);
-                        string iter_num = to_string(floor(iter / imgPerSim));
+                        unsigned long itnum = floor(iter / imgPerSim);
+                        string iter_num = to_string(itnum);
                         if (iter_num.length() == 1){
                             iter_num = "0000" + iter_num;
                         } else if (iter_num.length() == 2){
