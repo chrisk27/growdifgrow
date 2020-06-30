@@ -49,16 +49,16 @@ int main()
 
 
     // Start loop over h values
-    list<unsigned short> hList {12, 15, 20};
+    list<unsigned short> hList {10, 12, 14, 16, 18, 20};
 
     for (auto hL = hList.begin(); hL != hList.end(); ++hL) {
         unsigned short h = *hL;
 
         // Start loop for each specific slopes
-        list<unsigned short> slopes {2, 5, 8};
+        list<unsigned long long int> ablateOutOf1000 {1000, 900, 500, 250, 0};
 
-        for (auto slps = slopes.begin(); slps != slopes.end(); ++slps) {
-            unsigned short slopeRatio = *slps;
+        for (auto aR = ablateOutOf1000.begin(); aR != ablateOutOf1000.end(); ++aR) {
+            unsigned long long int ablateWhen1000 = *aR;
 
             unsigned short repeatCounter = 0;
             unsigned short numRepeats = 1;
@@ -93,7 +93,7 @@ int main()
                 }
 
                 // Ask for experimental parameters
-                short unsigned int r = 50;
+                short unsigned int r = 200;
                 short unsigned int c = 1;
     //            short unsigned int h = 15;
 
@@ -103,9 +103,15 @@ int main()
                 unsigned long long int stepsPerGrowth = 1e7;
                 unsigned long long int totalSteps = stepsPerGrowth * 200;
                 unsigned long long int imgPerSim = totalSteps / 1000;
+
+                // Allows for simulation to carry on past the end of the growth
+                unsigned long long int endSteps = 50 * stepsPerGrowth;
+                unsigned long long int fullSteps = endSteps + totalSteps;
                 
                 // Need to find how to choose where to ablate - make a list of spots. Note: Must only do integer math
-                list<unsigned long long int> ablateSpots {(totalSteps * 975) / 1000};
+                list<unsigned long long int> ablateSpots {(totalSteps * ablateWhen1000) / 1000};
+                float widthAblate = 0.75; //These tell us to ablate this proportion of the rows widths
+                float heightAblate = 0.75; //This tells us wot ablate this proportion of the columns height
 
 
                 // Define rates and probabilities. Note: will want to make this as a flow in later, instead of hardcoded.
@@ -130,33 +136,33 @@ int main()
 
                 //Create Initial Arrays. Note: Doing basics now, can change the initialization later.
                 ZArray zebra(r, c); // The main array where it stores the values of the chromatophores
-                zebra.ratio = slopeRatio;
+                //zebra.ratio = slopeRatio;
                 zebra.BlankArray();
 
                 Irid ir(r, c); // Iridophore array, for guiding the patterns
-                ir.ratio = slopeRatio;
+                //ir.ratio = slopeRatio;
                 ir.Blank();
 
                 Neighbor up(r, c); // A neighbor matrix to pull array values from
-                up.ratio = slopeRatio;
+                //up.ratio = slopeRatio;
                 up.udshift = -1;
                 up.boundaryCondition = "Periodic";
                 up.pickGenerator();
 
                 Neighbor down(r, c);
-                down.ratio = slopeRatio;
+                //down.ratio = slopeRatio;
                 down.udshift = 1;
                 down.boundaryCondition = "Periodic";
                 down.pickGenerator();
 
                 Neighbor left(r, c);
-                left.ratio = slopeRatio;
+                //left.ratio = slopeRatio;
                 left.lrshift = -1;
                 left.boundaryCondition = "Periodic";
                 left.pickGenerator();
 
                 Neighbor right(r, c);
-                right.ratio = slopeRatio;
+                //right.ratio = slopeRatio;
                 right.lrshift = 1;
                 right.boundaryCondition = "Periodic";
                 right.pickGenerator();
@@ -170,7 +176,7 @@ int main()
                 srand(time(0));
 
                 unsigned long long hitCounter = 0;
-                for (unsigned long long int iter = 0; iter < totalSteps; ++iter) {
+                for (unsigned long long int iter = 0; iter < fullSteps; ++iter) {
                     c = zebra.getCols();
                     r = zebra.getRows();
                     float proc = dis(generator); // Chooses random process
@@ -345,7 +351,7 @@ int main()
 
                     //Check to see if the system needs to be ablated
                     if (find(ablateSpots.begin(), ablateSpots.end(), iter) != ablateSpots.end()) {
-                        zebra.Ablate(0.75, 0.75);
+                        zebra.Ablate(widthAblate, heightAblate);
                         unsigned long itnum = floor(iter / imgPerSim);
                         string iter_num = to_string(itnum);
                         if (iter_num.length() == 1){
@@ -386,13 +392,13 @@ int main()
                     }
 
                     // Perform Growth
-                    if (iter % stepsPerGrowth == 0) {
-                        zebra.growthSwitcher(false,false);
-                        ir.growthSwitcher(true, true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
-                        up.growthSwitcher(false,false);
-                        down.growthSwitcher(false,false);
-                        left.growthSwitcher(false,false);
-                        right.growthSwitcher(false,false);
+                    if ((iter % stepsPerGrowth == 0) && (iter <= totalSteps)) {
+                        zebra.grow1D(false);
+                        ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
+                        up.grow1D(false);
+                        down.grow1D(false);
+                        left.grow1D(false);
+                        right.grow1D(false);
                     }
                 }
 
@@ -410,14 +416,14 @@ int main()
                 csvfile.open(csvCondTitle);
 
                 csvfile << "Initial_Rows" << "," << "Initial_Columns" << "," << "h" << "," ; 
-                csvfile << "Total_Steps" << "," << "Steps_per_Growth" << "," << "Slope_Ratio"<< "," << "Images" << "," ;
+                csvfile << "Growing_Steps" << "," << "Steps_per_Growth" << "," << "All_Steps"<< "," << "Images" << "," ;
                 csvfile << "Repeat Number" << "," << "Total_Repeats" << "," << "Num_Hits" << "," ;
                 csvfile << "Final_Rows" << "," << "Final_Columns" << "," << "Irid_Exist" << ",";
                 csvfile << "bx" << "," << "bm" << "," << "dx" << "," << "dm" << "," ;
                 csvfile << "sm" << "," << "sx" << "," << "lx" << "," << "Boundary Conditions" << ","<< "Ablated"<< endl;
 
                 csvfile << to_string(r0) << "," << to_string(c0) << "," << to_string(h) << ",";
-                csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(slopeRatio) << "," << to_string(imgPerSim)<< "," ;
+                csvfile << to_string(totalSteps) << "," << to_string(stepsPerGrowth) << "," << to_string(fullSteps) << "," << to_string(imgPerSim)<< "," ;
                 csvfile << to_string(repeatCounter + 1) << "," << to_string(numRepeats) << "," << to_string(hitCounter) << ",";
                 csvfile << to_string(r) << "," << to_string(c) << "," << iridAns << "," ;
                 csvfile << to_string(bx) << "," << to_string(bm) << "," << to_string(dx) << "," << to_string(dm) << "," ;
@@ -440,7 +446,7 @@ int main()
 
             }
 
-            std::cout << "Completed Simulation with slope ratio = " << to_string(slopeRatio) << endl;
+            std::cout << "Completed Simulation with ablation at " << to_string((ablateWhen1000 / 1000)) << endl;
         }
 
         std::cout << "Completed Simulations with h = " << to_string(h) << endl;
