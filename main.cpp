@@ -446,7 +446,7 @@ int main()
 
             }
 
-            std::cout << "Completed Simulation with ablation at " << to_string((ablateWhen1000 / 1000)) << endl;
+            std::cout << "Completed Simulation with ablation at " << to_string(ablateWhen1000) << endl;
         }
 
         std::cout << "Completed Simulations with h = " << to_string(h) << endl;
