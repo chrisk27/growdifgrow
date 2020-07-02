@@ -49,13 +49,13 @@ int main()
 
 
     // Start loop over h values
-    list<unsigned short> hList {10, 12, 14, 16, 18, 20};
+    list<unsigned short> hList {10, 12, 14, 16, 18};
 
     for (auto hL = hList.begin(); hL != hList.end(); ++hL) {
         unsigned short h = *hL;
 
         // Start loop for each specific slopes
-        list<unsigned long long int> ablateOutOf1000 {1000, 900, 500, 250, 0};
+        list<unsigned long long int> ablateOutOf1000 {1000, 900, 500, 250, 1, 0};
 
         for (auto aR = ablateOutOf1000.begin(); aR != ablateOutOf1000.end(); ++aR) {
             unsigned long long int ablateWhen1000 = *aR;
@@ -94,22 +94,29 @@ int main()
 
                 // Ask for experimental parameters
                 short unsigned int r = 200;
-                short unsigned int c = 1;
+                short unsigned int c = 200;
     //            short unsigned int h = 15;
 
                 short unsigned int r0 = r;  //Initial Condtions (to export)
                 short unsigned int c0 = c;
 
                 unsigned long long int stepsPerGrowth = 1e7;
-                unsigned long long int totalSteps = stepsPerGrowth * 200;
+                unsigned long long int totalSteps = stepsPerGrowth * 100;
                 unsigned long long int imgPerSim = totalSteps / 1000;
 
-                // Allows for simulation to carry on past the end of the growth
+                // Allows for simulation to carry on past the end of the growth or before growth starts
                 unsigned long long int endSteps = 50 * stepsPerGrowth;
-                unsigned long long int fullSteps = endSteps + totalSteps;
+                unsigned long long int beginSteps = 50 * stepsPerGrowth;
+                unsigned long long int fullSteps = endSteps + beginSteps + totalSteps;
                 
                 // Need to find how to choose where to ablate - make a list of spots. Note: Must only do integer math
-                list<unsigned long long int> ablateSpots {(totalSteps * ablateWhen1000) / 1000};
+                // Also note: the value of beginSteps will be added to this to figure out the correct spot to ablate
+                list<unsigned long long int> ablateSpots;
+                if (ablateWhen1000 != 0) {
+                    ablateSpots.push_back(((totalSteps * ablateWhen1000) / 1000) + beginSteps);
+                } else {
+                    ablateSpots.push_back(0);
+                }
                 float widthAblate = 0.75; //These tell us to ablate this proportion of the rows widths
                 float heightAblate = 0.75; //This tells us wot ablate this proportion of the columns height
 
@@ -146,25 +153,25 @@ int main()
                 Neighbor up(r, c); // A neighbor matrix to pull array values from
                 //up.ratio = slopeRatio;
                 up.udshift = -1;
-                up.boundaryCondition = "Periodic";
+                up.boundaryCondition = "ZeroFlux";
                 up.pickGenerator();
 
                 Neighbor down(r, c);
                 //down.ratio = slopeRatio;
                 down.udshift = 1;
-                down.boundaryCondition = "Periodic";
+                down.boundaryCondition = "ZeroFlux";
                 down.pickGenerator();
 
                 Neighbor left(r, c);
                 //left.ratio = slopeRatio;
                 left.lrshift = -1;
-                left.boundaryCondition = "Periodic";
+                left.boundaryCondition = "ZeroFlux";
                 left.pickGenerator();
 
                 Neighbor right(r, c);
                 //right.ratio = slopeRatio;
                 right.lrshift = 1;
-                right.boundaryCondition = "Periodic";
+                right.boundaryCondition = "ZeroFlux";
                 right.pickGenerator();
 
                 HitTracker hitCnt;
