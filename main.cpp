@@ -102,7 +102,7 @@ int main()
 
                 unsigned long long int stepsPerGrowth = 1e7;
                 unsigned long long int totalSteps = stepsPerGrowth * 100;
-                unsigned long long int imgPerSim = totalSteps / 1000;
+                unsigned long long int imgPerSim = totalSteps / 500;
 
                 // Allows for simulation to carry on past the end of the growth or before growth starts
                 unsigned long long int endSteps = 50 * stepsPerGrowth;
@@ -153,25 +153,25 @@ int main()
                 Neighbor up(r, c); // A neighbor matrix to pull array values from
                 //up.ratio = slopeRatio;
                 up.udshift = -1;
-                up.boundaryCondition = "ZeroFlux";
+                up.boundaryCondition = "Periodic";
                 up.pickGenerator();
 
                 Neighbor down(r, c);
                 //down.ratio = slopeRatio;
                 down.udshift = 1;
-                down.boundaryCondition = "ZeroFlux";
+                down.boundaryCondition = "Periodic";
                 down.pickGenerator();
 
                 Neighbor left(r, c);
                 //left.ratio = slopeRatio;
                 left.lrshift = -1;
-                left.boundaryCondition = "ZeroFlux";
+                left.boundaryCondition = "Periodic";
                 left.pickGenerator();
 
                 Neighbor right(r, c);
                 //right.ratio = slopeRatio;
                 right.lrshift = 1;
-                right.boundaryCondition = "ZeroFlux";
+                right.boundaryCondition = "Periodic";
                 right.pickGenerator();
 
                 HitTracker hitCnt;
@@ -399,7 +399,7 @@ int main()
                     }
 
                     // Perform Growth
-                    if ((iter % stepsPerGrowth == 0) && (iter <= totalSteps)) {
+                    if ((iter % stepsPerGrowth == 0) && (iter <= totalSteps + beginSteps) && (iter >= beginSteps)) {
                         zebra.grow1D(false);
                         ir.grow1D(true);  //This should ALWAYS be true: the iridophores guide the pattern, so need to extend
                         up.grow1D(false);
